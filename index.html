@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Розклад групи</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        background: #121212;
+        color: #f2f2f2;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .container {
+        width: min(94%, 850px);
+        margin: 20px auto 50px;
+    }
+
+    .header {
+        background: #1d1d1d;
+        border: 1px solid #2d2d2d;
+        border-radius: 20px;
+        padding: 28px 20px;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .title {
+        font-size: 30px;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .today {
+        font-size: 18px;
+        color: #aaa;
+        margin-bottom: 20px;
+    }
+
+    .week-box {
+        background: #252525;
+        border-radius: 15px;
+        padding: 18px;
+    }
+
+    .week-type {
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .week-number {
+        color: #999;
+        margin-top: 6px;
+    }
+
+    .day-buttons {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 8px;
+        margin-bottom: 25px;
+    }
+
+    .day-button {
+        background: #1d1d1d;
+        color: #ddd;
+        border: 1px solid #363636;
+        border-radius: 12px;
+        padding: 13px 8px;
+        cursor: pointer;
+        font-size: 15px;
+    }
+
+    .day-button:hover {
+        background: #292929;
+    }
+
+    .day-button.active {
+        background: #eeeeee;
+        color: #111;
+        font-weight: bold;
+    }
+
+    .day-title {
+        font-size: 25px;
+        font-weight: bold;
+        margin-bottom: 14px;
+    }
+
+    .lesson {
+        background: #1d1d1d;
+        border: 1px solid #2d2d2d;
+        border-radius: 16px;
+        padding: 18px;
+        margin-bottom: 10px;
+    }
+
+    .lesson-top {
+        display: flex;
+        justify-content: space-between;
+        gap: 15px;
+        margin-bottom: 9px;
+    }
+
+    .lesson-number {
+        color: #aaa;
+        font-weight: bold;
+    }
+
+    .lesson-time {
+        font-weight: bold;
+    }
+
+    .subject {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 9px;
+    }
+
+    .details {
+        color: #aaa;
+        line-height: 1.55;
+    }
+
+    .break {
+        text-align: center;
+        color: #888;
+        font-size: 14px;
+        margin: 9px 0 13px;
+    }
+
+    .message {
+        background: #1d1d1d;
+        border: 1px solid #2d2d2d;
+        border-radius: 16px;
+        padding: 25px 20px;
+        text-align: center;
+        color: #aaa;
+    }
+
+    .message strong {
+        display: block;
+        color: #f2f2f2;
+        font-size: 24px;
+        margin-bottom: 8px;
+    }
+
+    @media (max-width: 600px) {
+        .day-buttons {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .lesson-top {
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .title {
+            font-size: 27px;
+        }
+
+        .week-type {
+            font-size: 24px;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <div class="title">Розклад групи</div>
+
+        <div class="today" id="today"></div>
+
+        <div class="week-box">
+            <div class="week-type" id="weekType"></div>
+            <div class="week-number" id="weekNumber"></div>
+        </div>
+    </div>
+
+    <div class="day-buttons">
+
+        <button class="day-button" onclick="selectDay('Понеділок')">
+            Пн
+        </button>
+
+        <button class="day-button" onclick="selectDay('Вівторок')">
+            Вт
+        </button>
+
+        <button class="day-button" onclick="selectDay('Середа')">
+            Ср
+        </button>
+
+        <button class="day-button" onclick="selectDay('Четвер')">
+            Чт
+        </button>
+
+        <button class="day-button" onclick="selectDay('П’ятниця')">
+            Пт
+        </button>
+
+    </div>
+
+    <div id="schedule"></div>
+
+</div>
+
+<script>
+
+/* ЧАС ПАР */
+
+const lessonTimes = [
+    ["08:20", "09:40"],
+    ["09:50", "11:10"],
+    ["11:30", "12:50"],
+    ["13:00", "14:20"]
+];
+
+
+/* ДАТИ */
+
+const semesterStart = new Date(2026, 8, 1);
+const semesterEnd = new Date(2027, 0, 1);
+
+
+/* РОЗКЛАД */
+
+const schedule = {
+
+    "Понеділок_upper": {
+        1: {
+            subject: "Вступ до мовознавства",
+            room: "~",
+            teacher: "Лучканин С. М."
+        },
+        2: {
+            subject: "Давня українська література. Середньовіччя",
+            room: "~",
+            teacher: "Сліпушко О. М."
+        },
+        3: {
+            subject: "Іноземна мова",
+            room: "~",
+            teacher: "Шабуніна О. М. Власенко М. С. Антюхова Н. І. Скрипник А. В."
+        },
+        4: {
+            subject: "Основи нацспротиву",
+            room: "~",
+            teacher: "0"
+        }
+    },
+
+    "Понеділок_lower": {
+        1: {
+            subject: "Вступ до мовознавства",
+            room: "~",
+            teacher: "Лучканин С. М."
+        },
+        2: {
+            subject: "Давня українська література. Середньовіччя",
+            room: "~",
+            teacher: "Сліпушко О. М."
+        },
+        3: {
+            subject: "Іноземна мова",
+            room: "~",
+            teacher: "Шабуніна О. М. Власенко М. С. Антюхова Н. І. Скрипник А. В."
+        },
+        4: {
+            subject: "Основи нацспротиву",
+            room: "~",
+            teacher: "0"
+        }
+    },
+
+    "Вівторок_upper": {
+        1: {
+            subject: "Вступ до літературознавства",
+            room: "~",
+            teacher: "Бернадська Н. І."
+        },
+        2: {
+            subject: "Сучасна українська мова. Лексика. Фразеологія",
+            room: "~",
+            teacher: "Мацько О. М."
+        },
+        3: {
+            subject: "Антична література, Середньовіччя, Відродження",
+            room: "~",
+            teacher: "Канова Г. О."
+        },
+        4: {
+            subject: "Іноземна мова",
+            room: "~",
+            teacher: "Шабуніна О. М. Власенко М. С. Антюхова Н. І. Скрипник А. В."
+        }
+    },
+
+    "Вівторок_lower": {
+        1: {
+            subject: "Вступ до літературознавства",
+            room: "~",
+            teacher: "Бернадська Н. І.."
+        },
+        2: {
+            subject: "Сучасна українська мова. Лексика. Фразеологія",
+            room: "~",
+            teacher: "Мацько О. М."
+        },
+        3: {
+            subject: "Антична література, Середньовіччя, Відродження",
+            room: "~",
+            teacher: "Козяр Д. В."
+        }
+    },
+
+    "Середа_upper": {
+        1: {
+            subject: "Іноземна мова",
+            room: "~",
+            teacher: "Шабуніна О. М. Власенко М. С. Антюхова Н. І. Скрипник А. В."
+        },
+        2: {
+            subject: "Україна в контексті світової історії",
+            room: "~",
+            teacher: "0"
+        },
+        3: {
+            subject: "Давня українська література. Середньовіччя",
+            room: "~",
+            teacher: "Сліпушко О. М."
+        },
+        4: {
+            subject: "Основи нацспротиву",
+            room: "~",
+            teacher: "0"
+        }
+    },
+
+    "Середа_lower": {
+        1: {
+            subject: "Іноземна мова",
+            room: "~",
+            teacher: "Шабуніна О. М. Власенко М. С. Антюхова Н. І. Скрипник А. В."
+        },
+        2: {
+            subject: "Україна в контексті світової історії",
+            room: "~",
+            teacher: "0"
+        },
+        3: {
+            subject: "Давня українська література. Середньовіччя",
+            room: "~",
+            teacher: "ВПИСАТИ ПРІЗВИЩЕ ВИКЛАДАЧА"
+        },
+        4: {
+            subject: "Основи нацспротиву",
+            room: "~",
+            teacher: "0"
+        }
+    },
+
+    "Четвер_upper": {
+        1: {
+            subject: "Усна народна творчість",
+            room: "~",
+            teacher: "Наумовська О. В."
+        },
+        2: {
+            subject: "Латинська мова",
+            room: "~",
+            teacher: "ВПИСАТИ ПРІЗВИЩЕ ВИКЛАДАЧА"
+        },
+        3: {
+            subject: "Латинська мова",
+            room: "~",
+            teacher: "Корольова Н. В."
+        }
+    },
+
+    "Четвер_lower": {
+        1: {
+            subject: "Усна народна творчість",
+            room: "~",
+            teacher: "Наумовська О. В."
+        },
+        2: {
+            subject: "Латинська мова",
+            room: "~",
+            teacher: "Корольова Н. В."
+        },
+        3: {
+            subject: "Вступ до літературознавства",
+            room: "~",
+            teacher: "Бернадська Н. І."
+        }
+    },
+
+    "П’ятниця_upper": {
+        2: {
+            subject: "Сучасна українська мова. Лексика. Фразеологія",
+            room: "~",
+            teacher: "Мацько О. М."
+        },
+        3: {
+            subject: "Україна в контексті світової історії",
+            room: "~",
+            teacher: "0"
+        },
+        4: {
+            subject: "Вступ до університетських студій",
+            room: "~",
+            teacher: "Щелкунова О. С."
+        }
+    },
+
+    "П’ятниця_lower": {
+        1: {
+            subject: "Вступ до мовознавства",
+            room: "`",
+            teacher: "Лучанин С. М."
+        },
+        2: {
+            subject: "Сучасна українська мова. Лексика. Фразеологія",
+            room: "`",
+            teacher: "Мацько О. М."
+        },
+        3: {
+            subject: "Усна народна творчість",
+            room: "`",
+            teacher: "Рудакова Н. І."
+        },
+        4: {
+            subject: "Вступ до університетських студій",
+            room: "`",
+            teacher: "Щелкунова О. С."
+        }
+    }
+
+};
+
+
+const dayNames = [
+    "неділя",
+    "понеділок",
+    "вівторок",
+    "середа",
+    "четвер",
+    "п’ятниця",
+    "субота"
+];
+
+const monthNames = [
+    "січня",
+    "лютого",
+    "березня",
+    "квітня",
+    "травня",
+    "червня",
+    "липня",
+    "серпня",
+    "вересня",
+    "жовтня",
+    "листопада",
+    "грудня"
+];
+
+
+let selectedDay = null;
+
+
+function formatDate(date) {
+    return `${dayNames[date.getDay()]}, ${date.getDate()} ${monthNames[date.getMonth()]} ${date.getFullYear()} року`;
+}
+
+
+function mondayOfWeek(date) {
+
+    const d = new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate()
+    );
+
+    const day = d.getDay();
+
+    const difference = day === 0 ? -6 : 1 - day;
+
+    d.setDate(d.getDate() + difference);
+
+    return d;
+}
+
+
+function getWeekInfo(date) {
+
+    const currentMonday = mondayOfWeek(date);
+    const firstMonday = mondayOfWeek(semesterStart);
+
+    const difference =
+        Math.floor(
+            (currentMonday - firstMonday) /
+            (1000 * 60 * 60 * 24)
+        );
+
+    const weekNumber =
+        Math.floor(difference / 7) + 1;
+
+    return {
+        number: weekNumber,
+        type: weekNumber % 2 === 1 ? "upper" : "lower"
+    };
+}
+
+
+function timeToMinutes(time) {
+
+    const parts = time.split(":");
+
+    return Number(parts[0]) * 60 + Number(parts[1]);
+}
+
+
+function getDuration(start, end) {
+
+    const minutes =
+        timeToMinutes(end) -
+        timeToMinutes(start);
+
+    const hours =
+        Math.floor(minutes / 60);
+
+    const rest =
+        minutes % 60;
+
+    if (hours === 0) {
+        return `${rest} хв`;
+    }
+
+    if (rest === 0) {
+        return `${hours} год`;
+    }
+
+    return `${hours} год ${rest} хв`;
+}
+
+
+function getBreakDuration(end, nextStart) {
+
+    const minutes =
+        timeToMinutes(nextStart) -
+        timeToMinutes(end);
+
+    if (minutes <= 0) {
+        return "";
+    }
+
+    return `${minutes} хв`;
+}
+
+
+function escapeHTML(text) {
+
+    return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+function getTodayDayName() {
+
+    const day = new Date().getDay();
+
+    if (day === 1) return "Понеділок";
+    if (day === 2) return "Вівторок";
+    if (day === 3) return "Середа";
+    if (day === 4) return "Четвер";
+    if (day === 5) return "П’ятниця";
+
+    return "Понеділок";
+}
+
+
+function getShortDayName(day) {
+
+    const names = {
+        "Понеділок": "Пн",
+        "Вівторок": "Вт",
+        "Середа": "Ср",
+        "Четвер": "Чт",
+        "П’ятниця": "Пт"
+    };
+
+    return names[day];
+}
+
+
+function selectDay(day) {
+
+    selectedDay = day;
+
+    updateActiveButton();
+
+    renderSchedule();
+}
+
+
+function updateActiveButton() {
+
+    document
+        .querySelectorAll(".day-button")
+        .forEach(button => {
+
+            button.classList.remove("active");
+
+            if (
+                button.textContent.trim() ===
+                getShortDayName(selectedDay)
+            ) {
+                button.classList.add("active");
+            }
+
+        });
+}
+
+
+function updateHeader() {
+
+    const today = new Date();
+
+    document.getElementById("today")
+        .textContent =
+        formatDate(today);
+
+    if (
+        today < semesterStart ||
+        today >= semesterEnd
+    ) {
+
+        document.getElementById("weekType")
+            .textContent =
+            "ВИХІДНИЙ";
+
+        document.getElementById("weekNumber")
+            .textContent =
+            today < semesterStart
+                ? "До початку навчання"
+                : "Навчальний період завершено";
+
+        return;
+    }
+
+
+    const weekInfo =
+        getWeekInfo(today);
+
+
+    document.getElementById("weekType")
+        .textContent =
+        weekInfo.type === "upper"
+            ? "ВЕРХНІЙ ТИЖДЕНЬ"
+            : "НИЖНІЙ ТИЖДЕНЬ";
+
+
+    document.getElementById("weekNumber")
+        .textContent =
+        `Тиждень №${weekInfo.number}`;
+}
+
+
+function renderSchedule() {
+
+    const scheduleElement =
+        document.getElementById("schedule");
+
+    scheduleElement.innerHTML = "";
+
+
+    const today = new Date();
+
+
+    let weekType;
+
+
+    if (today < semesterStart) {
+
+        weekType = "upper";
+
+    } else {
+
+        weekType =
+            getWeekInfo(today).type;
+
+    }
+
+
+    const key =
+        `${selectedDay}_${weekType}`;
+
+
+    const daySchedule =
+        schedule[key];
+
+
+    const title =
+        document.createElement("div");
+
+    title.className =
+        "day-title";
+
+    title.textContent =
+        selectedDay;
+
+
+    scheduleElement.appendChild(title);
+
+
+    if (
+        !daySchedule ||
+        Object.keys(daySchedule).length === 0
+    ) {
+
+        const message =
+            document.createElement("div");
+
+        message.className =
+            "message";
+
+        message.innerHTML = `
+            <strong>Немає пар</strong>
+            На цей день нічого не внесено.
+        `;
+
+        scheduleElement.appendChild(message);
+
+        return;
+    }
+
+
+    const lessonNumbers =
+        Object.keys(daySchedule)
+            .map(Number)
+            .sort((a, b) => a - b);
+
+
+    lessonNumbers.forEach(
+        (lessonNumber, index) => {
+
+            const data =
+                daySchedule[lessonNumber];
+
+            const time =
+                lessonTimes[lessonNumber - 1];
+
+
+            if (!time) {
+                return;
+            }
+
+
+            const start = time[0];
+            const end = time[1];
+
+
+            const lesson =
+                document.createElement("div");
+
+            lesson.className =
+                "lesson";
+
+
+            lesson.innerHTML = `
+
+                <div class="lesson-top">
+
+                    <div class="lesson-number">
+                        ${lessonNumber} пара
+                    </div>
+
+                    <div class="lesson-time">
+                        ${start} – ${end}
+                    </div>
+
+                </div>
+
+
+                <div class="subject">
+                    ${escapeHTML(data.subject)}
+                </div>
+
+
+                <div class="details">
+
+                    Аудиторія:
+                    ${escapeHTML(data.room)}
+
+                    <br>
+
+                    Викладач:
+                    ${escapeHTML(data.teacher)}
+
+                    <br>
+
+                    Тривалість:
+                    ${getDuration(start, end)}
+
+                </div>
+            `;
+
+
+            scheduleElement.appendChild(lesson);
+
+
+            if (
+                index <
+                lessonNumbers.length - 1
+            ) {
+
+                const nextNumber =
+                    lessonNumbers[index + 1];
+
+                const nextTime =
+                    lessonTimes[nextNumber - 1];
+
+
+                if (!nextTime) {
+                    return;
+                }
+
+
+                const breakTime =
+                    getBreakDuration(
+                        end,
+                        nextTime[0]
+                    );
+
+
+                if (breakTime) {
+
+                    const breakElement =
+                        document.createElement("div");
+
+                    breakElement.className =
+                        "break";
+
+                    breakElement.textContent =
+                        `Перерва: ${breakTime}`;
+
+                    scheduleElement.appendChild(
+                        breakElement
+                    );
+                }
+
+            }
+
+        }
+    );
+}
+
+
+selectedDay =
+    getTodayDayName();
+
+updateHeader();
+renderSchedule();
+updateActiveButton();
+
+setInterval(() => {
+
+    updateHeader();
+    renderSchedule();
+    updateActiveButton();
+
+}, 60000);
+
+</script>
+
+</body>
+</html>
