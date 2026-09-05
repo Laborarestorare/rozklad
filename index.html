@@ -82,6 +82,21 @@ body {
     font-size: 14px;
 }
 
+.join-link {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 8px 13px;
+    border: 1px solid #555;
+    border-radius: 9px;
+    color: #ddd;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.join-link:hover {
+    background: #303030;
+}
+
 .day-buttons {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
@@ -239,6 +254,8 @@ body {
 
 <script>
 
+const onlineLinksEnabled = true;
+
 const lessonTimes = [
 
     ["08:20", "09:40"],
@@ -255,22 +272,26 @@ const schedule = {
         1: {
             subject: "Вступ до мовознавства",
             room: "~",
-            teacher: "Лучканин С. М."
+            teacher: "Лучканин С. М.",
+            link: "https://us04web.zoom.us/j/77656066140?pwd=nwxPnaTO0gjnrtPa2SVAgAuIDlga7F.1"
         },
         2: {
             subject: "Давня українська література. Середньовіччя",
             room: "~",
-            teacher: "Сліпушко О. М."
+            teacher: "Сліпушко О. М.",
+            link: ""
         },
         3: {
             subject: "Іноземна мова",
             room: "~",
-            teacher: "Шабуніна О. М. Власенко М. С. Антюхова Н. І. Скрипник А. В."
+            teacher: "Шабуніна О. М. Власенко М. С. Скрипник А. В.",
+            link: ""
         },
         4: {
             subject: "Основи нацспротиву",
             room: "~",
-            teacher: "0"
+            teacher: "0",
+            link: ""
         }
     },
 
@@ -278,22 +299,26 @@ const schedule = {
         1: {
             subject: "Вступ до мовознавства",
             room: "~",
-            teacher: "Лучканин С. М."
+            teacher: "Лучканин С. М.",
+            link: ""
         },
         2: {
             subject: "Давня українська література. Середньовіччя",
             room: "~",
-            teacher: "Сліпушко О. М."
+            teacher: "Сліпушко О. М.",
+            link: ""
         },
         3: {
             subject: "Іноземна мова",
             room: "~",
-            teacher: "Шабуніна О. М. Власенко М. С. Антюхова Н. І. Скрипник А. В."
+            teacher: "Шабуніна О. М. Власенко М. С. Скрипник А. В.",
+            link: ""
         },
         4: {
             subject: "Основи нацспротиву",
             room: "~",
-            teacher: "0"
+            teacher: "0",
+            link: ""
         }
     },
 
@@ -301,22 +326,26 @@ const schedule = {
         1: {
             subject: "Вступ до літературознавства",
             room: "118",
-            teacher: "Бернадська Н. І."
+            teacher: "Бернадська Н. І.",
+            link: "https://us04web.zoom.us/j/7433017940?pwd=aUc2K2l1cXBoQXBrbitvMWtGVmJEdz09#success"
         },
         2: {
             subject: "Сучасна українська мова. Лексика. Фразеологія",
             room: "122",
-            teacher: "Мацько О. М."
+            teacher: "Мацько О. М.",
+            link: "https://meet.google.com/udx-rvdq-qif"
         },
         3: {
             subject: "Антична література, Середньовіччя, Відродження",
             room: "133",
-            teacher: "Канова Г. О."
+            teacher: "Канова Г. О.",
+            link: ""
         },
         4: {
             subject: "Іноземна мова",
             room: "85 117 102 31",
-            teacher: "Шабуніна О. М. Власенко М. С. Антюхова Н. І. Скрипник А. В."
+            teacher: "Шабуніна О. М. Власенко М. С. Скрипник А. В.",
+            link: ""
         }
     },
 
@@ -324,17 +353,26 @@ const schedule = {
         1: {
             subject: "Вступ до літературознавства",
             room: "118",
-            teacher: "Бернадська Н. І.."
+            teacher: "Бернадська Н. І.",
+            link: "https://us04web.zoom.us/j/7433017940?pwd=aUc2K2l1cXBoQXBrbitvMWtGVmJEdz09#success"
         },
         2: {
             subject: "Сучасна українська мова. Лексика. Фразеологія",
             room: "122",
-            teacher: "Мацько О. М."
+            teacher: "Мацько О. М.",
+            link: "https://meet.google.com/udx-rvdq-qif"
         },
         3: {
             subject: "Антична література, Середньовіччя, Відродження",
             room: "133",
-            teacher: "Козяр Д. В."
+            teacher: "Козяр Д. В.",
+            link: ""
+        },
+        4: {
+            subject: "Тарас Шевченко та Київський університет",
+            room: "07.09.2026 - 11.10.2026",
+            teacher: "~",
+            link: "https://meet.google.com/pyg-bvqz-npj"
         }
     },
 
@@ -342,22 +380,26 @@ const schedule = {
         1: {
             subject: "Іноземна мова",
             room: "85 117 31",
-            teacher: "Шабуніна О. М. Власенко М. С. Скрипник А. В."
+            teacher: "Шабуніна О. М. Власенко М. С. Скрипник А. В.",
+            link: ""
         },
         2: {
             subject: "Україна в контексті світової історії",
             room: "133",
-            teacher: "0"
+            teacher: "Сергійчук В. І.",
+            link: "https://us04web.zoom.us/j/3679214484?pwd=63b9TgZBFK08WzALfNDkzQvXpq325b.1#success"
         },
         3: {
             subject: "Давня українська література. Середньовіччя",
             room: "116",
-            teacher: "Сліпушко О. М."
+            teacher: "Сліпушко О. М.",
+            link: ""
         },
         4: {
             subject: "Основи нацспротиву",
             room: "142",
-            teacher: "0"
+            teacher: "0",
+            link: ""
         }
     },
 
@@ -365,22 +407,26 @@ const schedule = {
         1: {
             subject: "Іноземна мова",
             room: "85 117 31",
-            teacher: "Шабуніна О. М. Власенко М. С. Скрипник А. В."
+            teacher: "Шабуніна О. М. Власенко М. С. Скрипник А. В.",
+            link: ""
         },
         2: {
             subject: "Україна в контексті світової історії",
             room: "133",
-            teacher: "0"
+            teacher: "Сергійчук В. І.",
+            link: "https://us04web.zoom.us/j/3679214484?pwd=63b9TgZBFK08WzALfNDkzQvXpq325b.1#success"
         },
         3: {
             subject: "Давня українська література. Середньовіччя",
             room: "116",
-            teacher: "Сліпушко О. М."
+            teacher: "Сліпушко О. М.",
+            link: ""
         },
         4: {
             subject: "Основи нацспротиву",
             room: "142",
-            teacher: "0"
+            teacher: "0",
+            link: ""
         }
     },
 
@@ -388,17 +434,26 @@ const schedule = {
         1: {
             subject: "Усна народна творчість",
             room: "145",
-            teacher: "Наумовська О. В."
+            teacher: "Наумовська О. В.",
+            link: "https://knu-ua.zoom.us/j/81235888275?pwd=6PobSdhi3ZYCaByNDZzut636j0QS3e.1#success"
         },
         2: {
             subject: "Латинська мова",
             room: "83",
-            teacher: "Корольова Н. В."
+            teacher: "Корольова Н. В.",
+            link: "https://us04web.zoom.us/j/76688408706?pwd=RGn3qI8mY0fd0UZv8nQtAn4L7CFYTO.1#success"
         },
         3: {
             subject: "Латинська мова",
             room: "145",
-            teacher: "Корольова Н. В."
+            teacher: "Корольова Н. В.",
+            link: "https://us04web.zoom.us/j/76688408706?pwd=RGn3qI8mY0fd0UZv8nQtAn4L7CFYTO.1#success"
+        },
+        4: {
+            subject: "Тарас Шевченко та Київський університет",
+            room: "07.09.2026 - 11.10.2026",
+            teacher: "~",
+            link: "https://meet.google.com/pyg-bvqz-npj"
         }
     },
 
@@ -406,17 +461,26 @@ const schedule = {
         1: {
             subject: "Усна народна творчість",
             room: "145",
-            teacher: "Наумовська О. В."
+            teacher: "Наумовська О. В.",
+            link: "https://knu-ua.zoom.us/j/81235888275?pwd=6PobSdhi3ZYCaByNDZzut636j0QS3e.1#success"
         },
         2: {
             subject: "Латинська мова",
             room: "83",
-            teacher: "Корольова Н. В."
+            teacher: "Корольова Н. В.",
+            link: "https://us04web.zoom.us/j/76688408706?pwd=RGn3qI8mY0fd0UZv8nQtAn4L7CFYTO.1#success"
         },
         3: {
             subject: "Вступ до літературознавства",
             room: "145",
-            teacher: "Бернадська Н. І."
+            teacher: "Бернадська Н. І.",
+            link: "https://us04web.zoom.us/j/7433017940?pwd=aUc2K2l1cXBoQXBrbitvMWtGVmJEdz09#success"
+        },
+        4: {
+            subject: "Тарас Шевченко та Київський університет",
+            room: "07.09.2026 - 11.10.2026",
+            teacher: "~",
+            link: "https://meet.google.com/pyg-bvqz-npj"
         }
     },
 
@@ -424,45 +488,51 @@ const schedule = {
 	1: {
 	    subject: "Україна в контексті світової історії",
 	    room: "~",
-	    teacher: "Сергійчук В. І."
+	    teacher: "Сергійчук В. І.",
+	    link: ""
 	},
         2: {
             subject: "Сучасна українська мова. Лексика. Фразеологія",
             room: "~",
-            teacher: "Голота Т. С."
+            teacher: "Голота Т. С.",
+            link: ""
         },   
         4: {
             subject: "Вступ до університетських студій",
             room: "~",
-            teacher: "Щелкунова О. С."
+            teacher: "Щелкунова О. С.",
+            link: "https://meet.google.com/jzs-zxzu-esc"
         }
     },
 
     "П’ятниця_lower": {
         1: {
             subject: "Вступ до мовознавства",
-            room: "`",
-            teacher: "Лучанин С. М."
+            room: "~",
+            teacher: "Лучанин С. М.",
+            link: ""
         },
         2: {
             subject: "Сучасна українська мова. Лексика. Фразеологія",
-            room: "`",
-            teacher: "Голота Т. С."
+            room: "~",
+            teacher: "Голота Т. С.",
+            link: ""
         },
         3: {
             subject: "Усна народна творчість",
-            room: "`",
-            teacher: "Рудакова Н. І."
+            room: "~",
+            teacher: "Рудакова Н. І.",
+            link: ""
         },
         4: {
             subject: "Вступ до університетських студій",
-            room: "`",
-            teacher: "Щелкунова О. С."
+            room: "~",
+            teacher: "Щелкунова О. С.",
+            link: "https://meet.google.com/jzs-zxzu-esc"
         }
     }
 
 };
-
 
 const semesterStart = new Date(2026, 8, 1);
 const semesterEnd = new Date(2027, 0, 1);
@@ -531,7 +601,7 @@ function mondayOfWeek(date) {
 
 }
 
-function getWeekInfo(date) {
+function getBaseWeekInfo(date) {
 
     const currentMonday =
         mondayOfWeek(date);
@@ -558,6 +628,117 @@ function getWeekInfo(date) {
                 : "lower"
 
     };
+
+}
+
+function getLastFridayLessonEnd(weekInfo) {
+
+    const fridaySchedule =
+        schedule[
+            `П’ятниця_${weekInfo.type}`
+        ];
+
+    if (!fridaySchedule) {
+        return null;
+    }
+
+    const lessonNumbers =
+        getFilledLessons(
+            fridaySchedule
+        );
+
+    if (
+        lessonNumbers.length === 0
+    ) {
+        return null;
+    }
+
+    const lastLessonNumber =
+        lessonNumbers[
+            lessonNumbers.length - 1
+        ];
+
+    const lastTime =
+        lessonTimes[
+            lastLessonNumber - 1
+        ];
+
+    if (!lastTime) {
+        return null;
+    }
+
+    return timeToMinutes(
+        lastTime[1]
+    );
+
+}
+
+function getWeekInfo(date) {
+
+    const baseWeekInfo =
+        getBaseWeekInfo(date);
+
+    const day =
+        date.getDay();
+
+    if (
+        day === 6 ||
+        day === 0
+    ) {
+
+        return {
+
+            number:
+                baseWeekInfo.number + 1,
+
+            type:
+                baseWeekInfo.type === "upper"
+                    ? "lower"
+                    : "upper"
+
+        };
+
+    }
+
+    if (day === 5) {
+
+        const lastFridayEnd =
+            getLastFridayLessonEnd(
+                baseWeekInfo
+            );
+
+        if (
+            lastFridayEnd !== null
+        ) {
+
+            const currentMinutes =
+                date.getHours() * 60 +
+                date.getMinutes();
+
+            if (
+                currentMinutes >=
+                lastFridayEnd
+            ) {
+
+                return {
+
+                    number:
+                        baseWeekInfo.number + 1,
+
+                    type:
+                        baseWeekInfo.type === "upper"
+                            ? "lower"
+                            : "upper"
+
+                };
+
+            }
+
+        }
+
+    }
+
+    return baseWeekInfo;
 
 }
 
@@ -1007,6 +1188,22 @@ function renderNextLesson() {
         </div>
 
         ${
+            onlineLinksEnabled &&
+            nextLesson.data.link
+            ? `
+                <a
+                    class="join-link"
+                    href="${escapeHTML(nextLesson.data.link)}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    Приєднатися
+                </a>
+            `
+            : ""
+        }
+
+        ${
             secondLesson
             ? `
                 <div class="next-after">
@@ -1187,6 +1384,22 @@ function renderSchedule() {
                     )}
 
                 </div>
+
+                ${
+                    onlineLinksEnabled &&
+                    data.link
+                    ? `
+                        <a
+                            class="join-link"
+                            href="${escapeHTML(data.link)}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            Приєднатися
+                        </a>
+                    `
+                    : ""
+                }
 
             `;
 
