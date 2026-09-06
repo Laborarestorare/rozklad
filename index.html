@@ -85,6 +85,7 @@ body {
 .join-link {
     display: inline-block;
     margin-top: 10px;
+    margin-right: 6px;
     padding: 8px 13px;
     border: 1px solid #555;
     border-radius: 9px;
@@ -257,12 +258,10 @@ body {
 const onlineLinksEnabled = true;
 
 const lessonTimes = [
-
     ["08:20", "09:40"],
     ["09:50", "11:10"],
     ["11:30", "12:50"],
     ["13:00", "14:20"]
-
 ];
 
 const schedule = {
@@ -273,19 +272,32 @@ const schedule = {
             subject: "Вступ до мовознавства",
             room: "~",
             teacher: "Лучканин С. М.",
-            link: "https://us04web.zoom.us/j/77656066140?pwd=nwxPnaTO0gjnrtPa2SVAgAuIDlga7F.1"
+            link: "https://us04web.zoom.us/j/77020093186?pwd=fRyJ65q66ghIM6E5aa4OCUsuYwEiZn.1"
         },
         2: {
             subject: "Давня українська література. Середньовіччя",
             room: "~",
             teacher: "Сліпушко О. М.",
-            link: ""
+            link: "https://us02web.zoom.us/j/6674714436?pwd=NGRtQjVTMHRZd1dOZ01IM2krODVCdz09#success"
         },
         3: {
             subject: "Іноземна мова",
             room: "~",
             teacher: "Шабуніна О. М. Власенко М. С. Скрипник А. В.",
-            link: ""
+            links: [
+                {
+                    title: "Англійська",
+                    url: ""
+                },
+                {
+                    title: "Іспанська",
+                    url: "https://us04web.zoom.us/j/7603131443?pwd=kv0vg6bnSCg8qXfbtLcIJfv0HPiH8Q.1#success"
+                },
+                {
+                    title: "Французька",
+                    url: "https://us02web.zoom.us/j/84226632607?pwd=Qzc1YXg3cCt2bkFJbW5lZ3dEeFZFQT09#success"
+                }
+            ]
         },
         4: {
             subject: "Основи нацспротиву",
@@ -300,7 +312,7 @@ const schedule = {
             subject: "Вступ до мовознавства",
             room: "~",
             teacher: "Лучканин С. М.",
-            link: ""
+            link: "https://us04web.zoom.us/j/77020093186?pwd=fRyJ65q66ghIM6E5aa4OCUsuYwEiZn.1"
         },
         2: {
             subject: "Давня українська література. Середньовіччя",
@@ -312,7 +324,20 @@ const schedule = {
             subject: "Іноземна мова",
             room: "~",
             teacher: "Шабуніна О. М. Власенко М. С. Скрипник А. В.",
-            link: ""
+            links: [
+                {
+                    title: "Англійська",
+                    url: ""
+                },
+                {
+                    title: "Іспанська",
+                    url: "https://us04web.zoom.us/j/7603131443?pwd=kv0vg6bnSCg8qXfbtLcIJfv0HPiH8Q.1#success"
+                },
+                {
+                    title: "Французька",
+                    url: "https://us02web.zoom.us/j/84226632607?pwd=Qzc1YXg3cCt2bkFJbW5lZ3dEeFZFQT09#success"
+                }
+            ]
         },
         4: {
             subject: "Основи нацспротиву",
@@ -345,7 +370,20 @@ const schedule = {
             subject: "Іноземна мова",
             room: "85 117 102 31",
             teacher: "Шабуніна О. М. Власенко М. С. Скрипник А. В.",
-            link: ""
+            links: [
+                {
+                    title: "Англійська",
+                    url: ""
+                },
+                {
+                    title: "Іспанська",
+                    url: "https://us04web.zoom.us/j/7603131443?pwd=kv0vg6bnSCg8qXfbtLcIJfv0HPiH8Q.1#success"
+                },
+                {
+                    title: "Французька",
+                    url: "https://us02web.zoom.us/j/84226632607?pwd=Qzc1YXg3cCt2bkFJbW5lZ3dEeFZFQT09#success"
+                }
+            ]
         }
     },
 
@@ -408,7 +446,20 @@ const schedule = {
             subject: "Іноземна мова",
             room: "85 117 31",
             teacher: "Шабуніна О. М. Власенко М. С. Скрипник А. В.",
-            link: ""
+            links: [
+                {
+                    title: "Англійська",
+                    url: ""
+                },
+                {
+                    title: "Іспанська",
+                    url: "https://us04web.zoom.us/j/7603131443?pwd=kv0vg6bnSCg8qXfbtLcIJfv0HPiH8Q.1#success"
+                },
+                {
+                    title: "Французька",
+                    url: "https://us02web.zoom.us/j/84226632607?pwd=Qzc1YXg3cCt2bkFJbW5lZ3dEeFZFQT09#success"
+                }
+            ]
         },
         2: {
             subject: "Україна в контексті світової історії",
@@ -631,6 +682,30 @@ function getBaseWeekInfo(date) {
 
 }
 
+function getFilledLessons(daySchedule) {
+
+    if (!daySchedule) {
+        return [];
+    }
+
+    return Object.keys(daySchedule)
+        .map(Number)
+        .sort((a, b) => a - b)
+        .filter(number => {
+
+            const lesson =
+                daySchedule[number];
+
+            return (
+                lesson &&
+                lesson.subject &&
+                lesson.subject.trim() !== ""
+            );
+
+        });
+
+}
+
 function getLastFridayLessonEnd(weekInfo) {
 
     const fridaySchedule =
@@ -765,6 +840,53 @@ function escapeHTML(text) {
 
 }
 
+function renderLinks(data) {
+
+    if (!onlineLinksEnabled) {
+        return "";
+    }
+
+    if (
+        data.links &&
+        data.links.length > 0
+    ) {
+
+        return data.links.map(link => `
+
+            <a
+                class="join-link"
+                href="${escapeHTML(link.url)}"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                ${escapeHTML(link.title)}
+            </a>
+
+        `).join("");
+
+    }
+
+    if (data.link) {
+
+        return `
+
+            <a
+                class="join-link"
+                href="${escapeHTML(data.link)}"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                Приєднатися
+            </a>
+
+        `;
+
+    }
+
+    return "";
+
+}
+
 function getScheduleForDate(date) {
 
     const day =
@@ -788,8 +910,6 @@ function getScheduleForDate(date) {
 
     return {
 
-        key: key,
-
         dayName: dayName,
 
         weekInfo: weekInfo,
@@ -797,30 +917,6 @@ function getScheduleForDate(date) {
         lessons: schedule[key] || {}
 
     };
-
-}
-
-function getFilledLessons(daySchedule) {
-
-    if (!daySchedule) {
-        return [];
-    }
-
-    return Object.keys(daySchedule)
-        .map(Number)
-        .sort((a, b) => a - b)
-        .filter(number => {
-
-            const lesson =
-                daySchedule[number];
-
-            return (
-                lesson &&
-                lesson.subject &&
-                lesson.subject.trim() !== ""
-            );
-
-        });
 
 }
 
@@ -1139,9 +1235,11 @@ function renderNextLesson() {
     if (!nextLesson) {
 
         box.innerHTML = `
+
             <div class="next-label">
                 Навчальний семестр завершено
             </div>
+
         `;
 
         return;
@@ -1187,36 +1285,26 @@ function renderNextLesson() {
 
         </div>
 
-        ${
-            onlineLinksEnabled &&
-            nextLesson.data.link
-            ? `
-                <a
-                    class="join-link"
-                    href="${escapeHTML(nextLesson.data.link)}"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    Приєднатися
-                </a>
-            `
-            : ""
-        }
+        ${renderLinks(nextLesson.data)}
 
         ${
             secondLesson
             ? `
+
                 <div class="next-after">
 
                     ${escapeHTML(
                         secondLesson.data.subject
                     )}
+
                     ·
+
                     ${secondLesson.time[0]}
                     –
                     ${secondLesson.time[1]}
 
                 </div>
+
             `
             : ""
         }
@@ -1385,21 +1473,7 @@ function renderSchedule() {
 
                 </div>
 
-                ${
-                    onlineLinksEnabled &&
-                    data.link
-                    ? `
-                        <a
-                            class="join-link"
-                            href="${escapeHTML(data.link)}"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            Приєднатися
-                        </a>
-                    `
-                    : ""
-                }
+                ${renderLinks(data)}
 
             `;
 
@@ -1477,6 +1551,7 @@ setInterval(
     () => {
 
         updateHeader();
+
         renderNextLesson();
 
         if (
