@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Домашнє завдання</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #121212;
+    color: #f2f2f2;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.header {
+    background: #1c1c1c;
+    border-radius: 20px;
+    padding: 24px;
+    margin-bottom: 20px;
+}
+
+.header-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.header h1 {
+    margin: 0 0 8px;
+    font-size: 28px;
+}
+
+#today {
+    color: #999;
+    font-size: 15px;
+}
+
+.schedule-button {
+    border: 0;
+    border-radius: 10px;
+    padding: 9px 13px;
+    background: #252525;
+    color: #aaa;
+    cursor: pointer;
+    font-size: 13px;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.schedule-button:hover {
+    background: #303030;
+    color: #fff;
+}
+
+.section {
+    background: #1c1c1c;
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.section h2 {
+    margin: 0 0 16px;
+    font-size: 21px;
+}
+
+.task {
+    background: #252525;
+    border-radius: 15px;
+    padding: 17px;
+    margin-bottom: 12px;
+}
+
+.task:last-child {
+    margin-bottom: 0;
+}
+
+.task-subject {
+    color: #aaa;
+    font-size: 14px;
+    margin-bottom: 6px;
+}
+
+.task-title {
+    font-size: 19px;
+    font-weight: 600;
+    margin-bottom: 7px;
+}
+
+.task-description {
+    color: #cfcfcf;
+    line-height: 1.5;
+    margin-bottom: 12px;
+}
+
+.task-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.info {
+    background: #303030;
+    border-radius: 9px;
+    padding: 7px 10px;
+    font-size: 13px;
+    color: #ddd;
+}
+
+.material {
+    display: inline-block;
+    margin-top: 12px;
+    color: #8ab4f8;
+    text-decoration: none;
+}
+
+.material:hover {
+    text-decoration: underline;
+}
+
+.calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.calendar-header button {
+    border: 0;
+    background: #303030;
+    color: #fff;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.calendar-header button:hover {
+    background: #3a3a3a;
+}
+
+#monthTitle {
+    font-size: 19px;
+    font-weight: 600;
+}
+
+.calendar-weekdays,
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+}
+
+.calendar-weekdays {
+    margin-bottom: 6px;
+}
+
+.weekday {
+    text-align: center;
+    color: #888;
+    font-size: 12px;
+    padding: 6px 0;
+}
+
+.day {
+    min-height: 72px;
+    background: #222;
+    border-radius: 11px;
+    padding: 8px;
+    cursor: pointer;
+    position: relative;
+}
+
+.day:hover {
+    background: #2b2b2b;
+}
+
+.day.empty {
+    background: transparent;
+    cursor: default;
+}
+
+.day-number {
+    font-size: 14px;
+}
+
+.day.today {
+    outline: 1px solid #666;
+}
+
+.day.selected {
+    background: #303030;
+    outline: 1px solid #888;
+}
+
+.day-markers {
+    display: flex;
+    gap: 5px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+.task-marker {
+    color: #f2f2f2;
+    font-size: 18px;
+    line-height: 1;
+}
+
+.event-marker {
+    color: #4da3ff;
+    font-size: 20px;
+    line-height: 1;
+    font-weight: bold;
+}
+
+.calendar-legend {
+    display: flex;
+    gap: 18px;
+    margin-top: 15px;
+    color: #aaa;
+    font-size: 13px;
+}
+
+.legend-task {
+    color: #f2f2f2;
+    font-size: 17px;
+}
+
+.legend-event {
+    color: #4da3ff;
+    font-size: 19px;
+    font-weight: bold;
+}
+
+.day-details {
+    margin-top: 18px;
+}
+
+.day-details-title {
+    color: #aaa;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.calendar-item {
+    background: #252525;
+    border-radius: 13px;
+    padding: 14px;
+    margin-bottom: 9px;
+}
+
+.calendar-item:last-child {
+    margin-bottom: 0;
+}
+
+.calendar-item.task-item {
+    border-left: 3px solid #777;
+}
+
+.calendar-item.event-item {
+    border-left: 3px solid #4da3ff;
+}
+
+.item-label {
+    font-size: 13px;
+    color: #999;
+    margin-bottom: 5px;
+}
+
+.item-title {
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.item-description {
+    color: #ccc;
+    line-height: 1.45;
+    margin-bottom: 9px;
+}
+
+.item-info {
+    color: #aaa;
+    font-size: 13px;
+    margin-top: 5px;
+}
+
+.event-type {
+    color: #4da3ff;
+}
+
+.empty {
+    color: #888;
+    text-align: center;
+    padding: 10px 0;
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 12px;
+    }
+
+    .header,
+    .section {
+        border-radius: 16px;
+        padding: 16px;
+    }
+
+    .header-top {
+        align-items: flex-start;
+    }
+
+    .calendar-weekdays,
+    .calendar-grid {
+        gap: 4px;
+    }
+
+    .day {
+        min-height: 58px;
+        padding: 6px;
+    }
+
+    .day-markers {
+        margin-top: 7px;
+    }
+
+    .calendar-legend {
+        gap: 12px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <div class="header-top">
+            <div>
+                <h1>Домашнє завдання</h1>
+                <div id="today"></div>
+            </div>
+
+            <a class="schedule-button" href="index.html">Розклад</a>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Найближчі завдання</h2>
+        <div id="tasksList"></div>
+    </div>
+
+    <div class="section">
+        <div class="calendar-header">
+            <button onclick="changeMonth(-1)">‹</button>
+            <div id="monthTitle"></div>
+            <button onclick="changeMonth(1)">›</button>
+        </div>
+
+        <div class="calendar-weekdays">
+            <div class="weekday">Пн</div>
+            <div class="weekday">Вт</div>
+            <div class="weekday">Ср</div>
+            <div class="weekday">Чт</div>
+            <div class="weekday">Пт</div>
+            <div class="weekday">Сб</div>
+            <div class="weekday">Нд</div>
+        </div>
+
+        <div id="calendar" class="calendar-grid"></div>
+
+        <div class="calendar-legend">
+            <span><span class="legend-task">●</span> Домашнє завдання</span>
+            <span><span class="legend-event">*</span> Подія</span>
+        </div>
+
+        <div id="dayDetails" class="day-details"></div>
+    </div>
+
+</div>
+
+<script>
+const SUPABASE_URL = "https://jnhoomjnsixcyhacqmgy.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_5LLHZS7S1FD3lHlZM_ox2g_Ggv8wY32";
+
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+);
+
+let tasks = [];
+let events = [];
+
+const today = new Date();
+
+let calendarDate = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    1
+);
+
+let selectedDate = formatDateKey(today);
+
+const monthNames = [
+    "Січень",
+    "Лютий",
+    "Березень",
+    "Квітень",
+    "Травень",
+    "Червень",
+    "Липень",
+    "Серпень",
+    "Вересень",
+    "Жовтень",
+    "Листопад",
+    "Грудень"
+];
+
+function escapeHtml(value) {
+    if (value === null || value === undefined) return "";
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function formatDateKey(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+}
+
+function formatDateOnly(dateString) {
+    if (!dateString) return "";
+
+    const parts = String(dateString).split("-");
+
+    if (parts.length !== 3) {
+        return String(dateString);
+    }
+
+    return `${parts[2]}.${parts[1]}.${parts[0]}`;
+}
+
+function formatDateTime(value) {
+    if (!value) return "";
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+        return String(value);
+    }
+
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+
+    return `${day}.${month}.${year}, ${hours}:${minutes}`;
+}
+
+function formatTime(value) {
+    if (!value) return "";
+
+    const match = String(value).match(/(\d{2}):(\d{2})/);
+
+    if (!match) {
+        return String(value);
+    }
+
+    return `${match[1]}:${match[2]}`;
+}
+
+function showCurrentDate() {
+    const text = today.toLocaleDateString("uk-UA", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+    });
+
+    document.getElementById("today").textContent =
+        text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+async function loadTasks() {
+    const { data, error } = await supabaseClient
+        .from("tasks")
+        .select(`
+            *,
+            subjects (
+                name
+            )
+        `)
+        .order("deadline", {
+            ascending: true,
+            nullsFirst: false
+        });
+
+    if (error) {
+        console.error("Помилка завантаження завдань:", error);
+        document.getElementById("tasksList").innerHTML =
+            `<div class="empty">Не вдалося завантажити завдання.</div>`;
+        return;
+    }
+
+    tasks = data || [];
+
+    renderTasks();
+    renderCalendar();
+    renderSelectedDay();
+}
+
+async function loadEvents() {
+    const { data, error } = await supabaseClient
+        .from("events")
+        .select("*")
+        .order("start_at", {
+            ascending: true
+        });
+
+    if (error) {
+        console.error("Помилка завантаження подій:", error);
+        events = [];
+    } else {
+        events = data || [];
+    }
+
+    renderCalendar();
+    renderSelectedDay();
+}
+
+function renderTasks() {
+    const container = document.getElementById("tasksList");
+
+    const todayKey = formatDateKey(today);
+
+    const visibleTasks = [...tasks]
+        .filter(task => {
+            if (!task.deadline) return true;
+            return task.deadline >= todayKey;
+        })
+        .sort((a, b) => {
+            if (!a.deadline && !b.deadline) return 0;
+            if (!a.deadline) return 1;
+            if (!b.deadline) return -1;
+
+            return a.deadline.localeCompare(b.deadline);
+        })
+        .slice(0, 5);
+
+    if (!visibleTasks.length) {
+        container.innerHTML =
+            `<div class="empty">Завдань поки немає.</div>`;
+        return;
+    }
+
+    container.innerHTML = visibleTasks.map(task => {
+        const subject = task.subjects?.name || "Предмет не вказано";
+
+        let info = "";
+
+        if (task.deadline) {
+            info += `
+                <div class="info">
+                    Дедлайн: ${escapeHtml(formatDateOnly(task.deadline))}
+                </div>
+            `;
+        }
+
+        if (task.start_time) {
+            const start = formatTime(task.start_time);
+            const end = task.end_time
+                ? formatTime(task.end_time)
+                : "";
+
+            info += `
+                <div class="info">
+                    Час виконання: ${escapeHtml(start)}${end ? "–" + escapeHtml(end) : ""}
+                </div>
+            `;
+        }
+
+        if (task.points !== null && task.points !== undefined) {
+            info += `
+                <div class="info">
+                    Бали: ${escapeHtml(task.points)}
+                </div>
+            `;
+        }
+
+        return `
+            <div class="task">
+                <div class="task-subject">
+                    ${escapeHtml(subject)}
+                </div>
+
+                <div class="task-title">
+                    ${escapeHtml(task.title)}
+                </div>
+
+                ${
+                    task.description
+                    ? `
+                        <div class="task-description">
+                            ${escapeHtml(task.description)}
+                        </div>
+                    `
+                    : ""
+                }
+
+                <div class="task-info">
+                    ${info}
+                </div>
+
+                ${
+                    task.material
+                    ? `
+                        <div>
+                            <span class="material">
+                                Матеріал: ${escapeHtml(task.material)}
+                            </span>
+                        </div>
+                    `
+                    : ""
+                }
+            </div>
+        `;
+    }).join("");
+}
+
+function getEventDate(event) {
+    if (!event.start_at) return null;
+
+    const date = new Date(event.start_at);
+
+    if (Number.isNaN(date.getTime())) {
+        return null;
+    }
+
+    return formatDateKey(date);
+}
+
+function getEventType(event) {
+    if (event.type) {
+        return event.type;
+    }
+
+    const title = String(event.title || "").toLowerCase();
+
+    if (title.includes("семінар")) return "Семінар";
+    if (title.includes("іспит")) return "Іспит";
+    if (title.includes("залік")) return "Залік";
+    if (title.includes("консульта")) return "Консультація";
+    if (title.includes("лекці")) return "Лекція";
+
+    return "Подія";
+}
+
+function getItemsForDate(dateKey) {
+    const dateTasks = tasks.filter(task =>
+        task.deadline === dateKey
+    );
+
+    const dateEvents = events.filter(event =>
+        getEventDate(event) === dateKey
+    );
+
+    return {
+        tasks: dateTasks,
+        events: dateEvents
+    };
+}
+
+function renderCalendar() {
+    const calendar = document.getElementById("calendar");
+    const monthTitle = document.getElementById("monthTitle");
+
+    const year = calendarDate.getFullYear();
+    const month = calendarDate.getMonth();
+
+    monthTitle.textContent =
+        `${monthNames[month]} ${year}`;
+
+    const firstDay = new Date(year, month, 1);
+
+    let startDay = firstDay.getDay();
+
+    if (startDay === 0) {
+        startDay = 7;
+    }
+
+    startDay -= 1;
+
+    const daysInMonth =
+        new Date(year, month + 1, 0).getDate();
+
+    let html = "";
+
+    for (let i = 0; i < startDay; i++) {
+        html += `<div class="day empty"></div>`;
+    }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+        const date = new Date(year, month, day);
+        const dateKey = formatDateKey(date);
+
+        const items = getItemsForDate(dateKey);
+
+        const isToday =
+            dateKey === formatDateKey(today);
+
+        const isSelected =
+            dateKey === selectedDate;
+
+        html += `
+            <div
+                class="day ${isToday ? "today" : ""} ${isSelected ? "selected" : ""}"
+                onclick="selectDate('${dateKey}')"
+            >
+                <div class="day-number">
+                    ${day}
+                </div>
+
+                ${
+                    items.tasks.length || items.events.length
+                    ? `
+                        <div class="day-markers">
+                            ${
+                                items.tasks.length
+                                ? `<span class="task-marker">●</span>`
+                                : ""
+                            }
+
+                            ${
+                                items.events.length
+                                ? `<span class="event-marker">*</span>`
+                                : ""
+                            }
+                        </div>
+                    `
+                    : ""
+                }
+            </div>
+        `;
+    }
+
+    calendar.innerHTML = html;
+}
+
+function selectDate(dateKey) {
+    selectedDate = dateKey;
+
+    renderCalendar();
+    renderSelectedDay();
+}
+
+function renderSelectedDay() {
+    const container = document.getElementById("dayDetails");
+
+    if (!selectedDate) {
+        container.innerHTML = "";
+        return;
+    }
+
+    const items = getItemsForDate(selectedDate);
+
+    if (!items.tasks.length && !items.events.length) {
+        container.innerHTML = "";
+        return;
+    }
+
+    let html = `
+        <div class="day-details-title">
+            ${escapeHtml(formatDateOnly(selectedDate))}
+        </div>
+    `;
+
+    items.tasks.forEach(task => {
+        const subject =
+            task.subjects?.name || "Предмет не вказано";
+
+        let info = "";
+
+        if (task.start_time) {
+            const start = formatTime(task.start_time);
+            const end = task.end_time
+                ? formatTime(task.end_time)
+                : "";
+
+            info += `
+                <div class="item-info">
+                    Час виконання:
+                    ${escapeHtml(start)}${end ? "–" + escapeHtml(end) : ""}
+                </div>
+            `;
+        }
+
+        if (task.points !== null && task.points !== undefined) {
+            info += `
+                <div class="item-info">
+                    Бали: ${escapeHtml(task.points)}
+                </div>
+            `;
+        }
+
+        if (task.material) {
+            info += `
+                <div class="item-info">
+                    Матеріал: ${escapeHtml(task.material)}
+                </div>
+            `;
+        }
+
+        html += `
+            <div class="calendar-item task-item">
+                <div class="item-label">
+                    ● ${escapeHtml(subject)}
+                </div>
+
+                <div class="item-title">
+                    ${escapeHtml(task.title)}
+                </div>
+
+                ${
+                    task.description
+                    ? `
+                        <div class="item-description">
+                            ${escapeHtml(task.description)}
+                        </div>
+                    `
+                    : ""
+                }
+
+                <div class="item-info">
+                    Дедлайн:
+                    ${escapeHtml(formatDateOnly(task.deadline))}
+                </div>
+
+                ${info}
+            </div>
+        `;
+    });
+
+    items.events.forEach(event => {
+        const type = getEventType(event);
+
+        let time = "";
+
+        if (event.start_at) {
+            time += formatDateTime(event.start_at);
+
+            if (event.end_at) {
+                const endDate = new Date(event.end_at);
+
+                if (!Number.isNaN(endDate.getTime())) {
+                    time += `–${String(endDate.getHours()).padStart(2, "0")}:${String(endDate.getMinutes()).padStart(2, "0")}`;
+                }
+            }
+        }
+
+        html += `
+            <div class="calendar-item event-item">
+                <div class="item-label event-type">
+                    * ${escapeHtml(type)}
+                </div>
+
+                <div class="item-title">
+                    ${escapeHtml(event.title || "Подія")}
+                </div>
+
+                ${
+                    event.description
+                    ? `
+                        <div class="item-description">
+                            ${escapeHtml(event.description)}
+                        </div>
+                    `
+                    : ""
+                }
+
+                ${
+                    time
+                    ? `
+                        <div class="item-info">
+                            Час: ${escapeHtml(time)}
+                        </div>
+                    `
+                    : ""
+                }
+
+                ${
+                    event.location
+                    ? `
+                        <div class="item-info">
+                            Місце: ${escapeHtml(event.location)}
+                        </div>
+                    `
+                    : ""
+                }
+
+                ${
+                    event.link
+                    ? `
+                        <div>
+                            <a
+                                class="material"
+                                href="${escapeHtml(event.link)}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                Відкрити посилання
+                            </a>
+                        </div>
+                    `
+                    : ""
+                }
+            </div>
+        `;
+    });
+
+    container.innerHTML = html;
+}
+
+function changeMonth(offset) {
+    calendarDate = new Date(
+        calendarDate.getFullYear(),
+        calendarDate.getMonth() + offset,
+        1
+    );
+
+    renderCalendar();
+}
+
+showCurrentDate();
+loadTasks();
+loadEvents();
+</script>
+
+</body>
+</html>

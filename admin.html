@@ -1,0 +1,1512 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Адмінка</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #121212;
+    color: #f2f2f2;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    width: min(900px, calc(100% - 24px));
+    margin: 30px auto;
+}
+
+h1, h2, h3 {
+    margin-top: 0;
+}
+
+.card {
+    background: #1d1d1d;
+    border-radius: 18px;
+    padding: 22px;
+    margin-bottom: 18px;
+}
+
+.login-card {
+    max-width: 420px;
+    margin: 80px auto;
+}
+
+label {
+    display: block;
+    margin: 14px 0 7px;
+    color: #cfcfcf;
+}
+
+input,
+textarea,
+select {
+    width: 100%;
+    padding: 12px 13px;
+    border: 1px solid #383838;
+    border-radius: 10px;
+    background: #252525;
+    color: #fff;
+    font-size: 15px;
+    outline: none;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    border-color: #666;
+}
+
+input[type="number"] {
+    appearance: textfield;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    appearance: none;
+    margin: 0;
+}
+
+textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+
+button {
+    border: 0;
+    border-radius: 10px;
+    padding: 11px 15px;
+    background: #303030;
+    color: #fff;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+button:hover {
+    background: #3a3a3a;
+}
+
+.primary {
+    background: #f2f2f2;
+    color: #111;
+}
+
+.primary:hover {
+    background: #dcdcdc;
+}
+
+.danger {
+    background: #552525;
+}
+
+.danger:hover {
+    background: #693030;
+}
+
+.secondary {
+    background: #292929;
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 18px;
+}
+
+.topbar h1 {
+    margin: 0;
+}
+
+.topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.schedule-button {
+    background: #252525;
+    color: #bbb;
+}
+
+.schedule-button:hover {
+    background: #303030;
+    color: #fff;
+}
+
+.menu-button {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #252525;
+    padding: 16px;
+    font-size: 16px;
+    text-align: left;
+}
+
+.form-content {
+    display: none;
+    padding-top: 18px;
+}
+
+.form-content.open {
+    display: block;
+}
+
+.row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.row-three {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 18px;
+}
+
+.points-control {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.points-control button {
+    width: 45px;
+    height: 45px;
+    padding: 0;
+    font-size: 20px;
+    border-radius: 10px;
+}
+
+.points-control input {
+    text-align: center;
+    margin: 0 7px;
+}
+
+.type-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+}
+
+.type-button {
+    background: #252525;
+    border: 1px solid #383838;
+}
+
+.type-button.active {
+    background: #e8e8e8;
+    color: #111;
+}
+
+.item {
+    background: #242424;
+    border-radius: 14px;
+    padding: 17px;
+    margin-top: 12px;
+}
+
+.item-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.item-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.item-meta {
+    color: #aaa;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.item-description {
+    margin-top: 12px;
+    color: #ddd;
+    white-space: pre-wrap;
+}
+
+.item-info {
+    margin-top: 10px;
+    color: #bbb;
+}
+
+.item-link {
+    margin-top: 10px;
+}
+
+.item-link a {
+    color: #9fc5ff;
+    text-decoration: none;
+}
+
+.edit-form {
+    display: none;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #383838;
+}
+
+.edit-form.open {
+    display: block;
+}
+
+.small {
+    font-size: 13px;
+    color: #999;
+}
+
+.empty {
+    color: #999;
+    padding: 15px 0;
+}
+
+.status {
+    margin-top: 12px;
+    color: #bbb;
+}
+
+.error {
+    color: #ff8e8e;
+}
+
+.success {
+    color: #9ee69e;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.badge {
+    display: inline-block;
+    background: #333;
+    border-radius: 7px;
+    padding: 4px 8px;
+    font-size: 12px;
+    color: #ddd;
+}
+
+@media (max-width: 650px) {
+    .row,
+    .row-three {
+        grid-template-columns: 1fr;
+    }
+
+    .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .topbar-actions {
+        width: 100%;
+    }
+
+    .item-header {
+        flex-direction: column;
+    }
+
+    .container {
+        margin-top: 15px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div id="loginView" class="container">
+    <div class="card login-card">
+        <h1>Вхід</h1>
+
+        <label for="loginEmail">Email</label>
+        <input id="loginEmail" type="email" autocomplete="email">
+
+        <label for="loginPassword">Пароль</label>
+        <input id="loginPassword" type="password" autocomplete="current-password">
+
+        <div class="actions">
+            <button class="primary" onclick="login()">Увійти</button>
+        </div>
+
+        <div id="loginStatus" class="status"></div>
+    </div>
+</div>
+
+
+<div id="adminView" class="container hidden">
+
+    <div class="topbar">
+        <h1>Адмінка</h1>
+
+        <div class="topbar-actions">
+            <button class="schedule-button" onclick="window.location.href='index.html'">Розклад</button>
+            <button onclick="logout()">Вийти</button>
+        </div>
+    </div>
+
+
+    <div class="card">
+
+        <button class="menu-button" onclick="toggleMenu('taskForm')">
+            <span>Додати домашнє завдання</span>
+            <span>+</span>
+        </button>
+
+        <div id="taskForm" class="form-content">
+
+            <label for="taskSubject">Предмет</label>
+            <select id="taskSubject">
+                <option value="">Предмет не вибрано</option>
+            </select>
+
+            <label for="taskTitle">Назва</label>
+            <input id="taskTitle" type="text" placeholder="Наприклад: Вивчити §5">
+
+            <label for="taskDescription">Опис</label>
+            <textarea id="taskDescription" placeholder="Додатковий опис"></textarea>
+
+            <div class="row">
+
+                <div>
+                    <label for="taskDeadline">Дедлайн</label>
+                    <input id="taskDeadline" type="date">
+                    <div class="small">Можна залишити порожнім.</div>
+                </div>
+
+                <div>
+                    <label>Бали</label>
+
+                    <div class="points-control">
+                        <button type="button" onclick="changePoints(-1)">−</button>
+                        <input id="taskPoints" type="number" min="0" value="0">
+                        <button type="button" onclick="changePoints(1)">+</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div>
+                    <label for="taskDuration">Приблизний час виконання</label>
+                    <input id="taskDuration" type="number" min="1" placeholder="20">
+                </div>
+
+                <div>
+                    <label for="taskDurationUnit">Одиниця часу</label>
+                    <select id="taskDurationUnit">
+                        <option value="minutes">хвилин</option>
+                        <option value="hours">годин</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <label for="taskMaterial">Матеріал</label>
+            <input id="taskMaterial" type="text" placeholder="Посилання або назва матеріалу">
+
+            <div class="actions">
+                <button class="primary" onclick="addTask()">Додати</button>
+                <button onclick="clearTaskForm()">Очистити</button>
+            </div>
+
+            <div id="taskStatus" class="status"></div>
+
+        </div>
+    </div>
+
+
+    <div class="card">
+
+        <button class="menu-button" onclick="toggleMenu('eventForm')">
+            <span>Додати подію</span>
+            <span>+</span>
+        </button>
+
+        <div id="eventForm" class="form-content">
+
+            <label>Тип події</label>
+
+            <div id="eventTypeButtons" class="type-buttons">
+                <button type="button" class="type-button active" data-type="" onclick="selectEventType(this)">Без типу</button>
+                <button type="button" class="type-button" data-type="Семінар" onclick="selectEventType(this)">Семінар</button>
+                <button type="button" class="type-button" data-type="Іспит" onclick="selectEventType(this)">Іспит</button>
+                <button type="button" class="type-button" data-type="Залік" onclick="selectEventType(this)">Залік</button>
+                <button type="button" class="type-button" data-type="Консультація" onclick="selectEventType(this)">Консультація</button>
+                <button type="button" class="type-button" data-type="Лекція" onclick="selectEventType(this)">Лекція</button>
+                <button type="button" class="type-button" data-type="Особисте" onclick="selectEventType(this)">Особисте</button>
+                <button type="button" class="type-button" data-type="Інше" onclick="selectEventType(this)">Інше</button>
+            </div>
+
+            <label for="eventSubject">Предмет</label>
+            <select id="eventSubject">
+                <option value="">Без предмета</option>
+            </select>
+
+            <label for="eventTitle">Назва</label>
+            <input id="eventTitle" type="text" placeholder="Наприклад: День народження">
+
+            <label for="eventDescription">Опис</label>
+            <textarea id="eventDescription" placeholder="Додатковий опис"></textarea>
+
+            <div class="row">
+
+                <div>
+                    <label for="eventStart">Початок</label>
+                    <input id="eventStart" type="datetime-local">
+                    <div class="small">Можна вказати лише день або день і час.</div>
+                </div>
+
+                <div>
+                    <label for="eventEnd">Кінець</label>
+                    <input id="eventEnd" type="datetime-local">
+                    <div class="small">Можна залишити порожнім.</div>
+                </div>
+
+            </div>
+
+            <label for="eventInfo">Додаткова інформація</label>
+            <input id="eventInfo" type="text" placeholder="Наприклад: аудиторія 204">
+
+            <label for="eventLink">Посилання</label>
+            <input id="eventLink" type="url" placeholder="https://...">
+
+            <div class="actions">
+                <button class="primary" onclick="addEvent()">Додати</button>
+                <button onclick="clearEventForm()">Очистити</button>
+            </div>
+
+            <div id="eventStatus" class="status"></div>
+
+        </div>
+    </div>
+
+
+    <div class="card">
+        <h2>Домашні завдання</h2>
+        <div id="tasksList"></div>
+    </div>
+
+
+    <div class="card">
+        <h2>Події</h2>
+        <div id="eventsList"></div>
+    </div>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+const SUPABASE_URL = "https://jnhoomjnsixcyhacqmgy.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_5LLHZS7S1FD3lHlZM_ox2g_Ggv8wY32";
+
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+);
+
+
+let subjectsCache = [];
+let tasksCache = [];
+let eventsCache = [];
+let selectedEventType = "";
+
+
+document.addEventListener("DOMContentLoaded", async () => {
+    const { data } = await supabaseClient.auth.getSession();
+
+    if (data.session) {
+        showAdmin();
+        await loadAll();
+    } else {
+        showLogin();
+    }
+
+    supabaseClient.auth.onAuthStateChange(async (event, session) => {
+        if (session) {
+            showAdmin();
+            await loadAll();
+        } else {
+            showLogin();
+        }
+    });
+});
+
+
+function showLogin() {
+    document.getElementById("loginView").classList.remove("hidden");
+    document.getElementById("adminView").classList.add("hidden");
+}
+
+
+function showAdmin() {
+    document.getElementById("loginView").classList.add("hidden");
+    document.getElementById("adminView").classList.remove("hidden");
+}
+
+
+async function login() {
+    const email = document.getElementById("loginEmail").value.trim();
+    const password = document.getElementById("loginPassword").value;
+
+    const status = document.getElementById("loginStatus");
+
+    status.textContent = "";
+
+    if (!email || !password) {
+        status.textContent = "Введи email і пароль.";
+        status.className = "status error";
+        return;
+    }
+
+    const { error } = await supabaseClient.auth.signInWithPassword({
+        email,
+        password
+    });
+
+    if (error) {
+        status.textContent = error.message;
+        status.className = "status error";
+        return;
+    }
+
+    status.textContent = "Вхід виконано.";
+    status.className = "status success";
+}
+
+
+async function logout() {
+    await supabaseClient.auth.signOut();
+}
+
+
+async function loadAll() {
+    await loadSubjects();
+    await loadTasks();
+    await loadEvents();
+}
+
+
+async function loadSubjects() {
+    const { data, error } = await supabaseClient
+        .from("subjects")
+        .select("id, name")
+        .order("name");
+
+    if (error) {
+        console.error(error);
+        return;
+    }
+
+    subjectsCache = data || [];
+
+    fillSubjectSelect("taskSubject", "Предмет не вибрано");
+    fillSubjectSelect("eventSubject", "Без предмета");
+}
+
+
+function fillSubjectSelect(id, emptyText) {
+    const select = document.getElementById(id);
+
+    select.innerHTML = "";
+
+    const emptyOption = document.createElement("option");
+    emptyOption.value = "";
+    emptyOption.textContent = emptyText;
+    select.appendChild(emptyOption);
+
+    subjectsCache.forEach(subject => {
+        const option = document.createElement("option");
+        option.value = subject.id;
+        option.textContent = subject.name;
+        select.appendChild(option);
+    });
+}
+
+
+async function loadTasks() {
+    const { data, error } = await supabaseClient
+        .from("tasks")
+        .select(`
+            id,
+            subject_id,
+            title,
+            description,
+            deadline,
+            points,
+            duration_minutes,
+            material,
+            created_at,
+            subjects (
+                name
+            )
+        `)
+        .order("deadline", { ascending: true, nullsFirst: false })
+        .order("created_at", { ascending: false });
+
+    if (error) {
+        console.error(error);
+        document.getElementById("tasksList").innerHTML =
+            `<div class="error">Помилка завантаження: ${escapeHtml(error.message)}</div>`;
+        return;
+    }
+
+    tasksCache = data || [];
+    renderTasks();
+}
+
+
+async function loadEvents() {
+    const { data, error } = await supabaseClient
+        .from("events")
+        .select(`
+            id,
+            title,
+            description,
+            start_at,
+            end_at,
+            link,
+            info,
+            event_type,
+            subject_id,
+            created_at,
+            subjects (
+                name
+            )
+        `)
+        .order("start_at", { ascending: true });
+
+    if (error) {
+        console.error(error);
+        document.getElementById("eventsList").innerHTML =
+            `<div class="error">Помилка завантаження: ${escapeHtml(error.message)}</div>`;
+        return;
+    }
+
+    eventsCache = data || [];
+    renderEvents();
+}
+
+
+function renderTasks() {
+    const container = document.getElementById("tasksList");
+
+    if (!tasksCache.length) {
+        container.innerHTML = `<div class="empty">Домашніх завдань поки немає.</div>`;
+        return;
+    }
+
+    container.innerHTML = tasksCache.map(task => {
+
+        const subject = task.subjects?.name || "Предмет не вказано";
+
+        let duration = "";
+
+        if (task.duration_minutes) {
+            if (task.duration_minutes % 60 === 0) {
+                duration = `${task.duration_minutes / 60} год.`;
+            } else {
+                duration = `${task.duration_minutes} хв.`;
+            }
+        }
+
+        const deadline = task.deadline
+            ? formatDate(task.deadline)
+            : "Без дедлайну";
+
+        return `
+            <div class="item">
+
+                <div class="item-header">
+
+                    <div>
+                        <div class="item-title">${escapeHtml(task.title)}</div>
+
+                        <div class="item-meta">
+                            ${escapeHtml(subject)}
+                            <br>
+                            Дедлайн: ${escapeHtml(deadline)}
+                            ${duration ? `<br>Приблизний час: ${escapeHtml(duration)}` : ""}
+                            <br>
+                            Бали: ${Number(task.points || 0)}
+                        </div>
+                    </div>
+
+                    <div class="actions" style="margin-top:0">
+                        <button onclick="toggleEditTask(${task.id})">Редагувати</button>
+                        <button class="danger" onclick="deleteTask(${task.id})">Видалити</button>
+                    </div>
+
+                </div>
+
+                ${task.description
+                    ? `<div class="item-description">${escapeHtml(task.description)}</div>`
+                    : ""
+                }
+
+                ${task.material
+                    ? `<div class="item-link">
+                        <a href="${escapeAttribute(task.material)}" target="_blank" rel="noopener noreferrer">
+                            Матеріал
+                        </a>
+                    </div>`
+                    : ""
+                }
+
+                <div id="edit-task-${task.id}" class="edit-form">
+                    ${taskEditForm(task)}
+                </div>
+
+            </div>
+        `;
+    }).join("");
+}
+
+
+function taskEditForm(task) {
+
+    const subjectOptions = subjectsCache.map(subject => `
+        <option value="${subject.id}" ${String(task.subject_id) === String(subject.id) ? "selected" : ""}>
+            ${escapeHtml(subject.name)}
+        </option>
+    `).join("");
+
+    let durationValue = "";
+    let durationUnit = "minutes";
+
+    if (task.duration_minutes) {
+        if (task.duration_minutes % 60 === 0) {
+            durationValue = task.duration_minutes / 60;
+            durationUnit = "hours";
+        } else {
+            durationValue = task.duration_minutes;
+            durationUnit = "minutes";
+        }
+    }
+
+    return `
+        <label>Предмет</label>
+        <select id="edit-task-subject-${task.id}">
+            <option value="">Предмет не вибрано</option>
+            ${subjectOptions}
+        </select>
+
+        <label>Назва</label>
+        <input id="edit-task-title-${task.id}" value="${escapeAttribute(task.title)}">
+
+        <label>Опис</label>
+        <textarea id="edit-task-description-${task.id}">${escapeHtml(task.description || "")}</textarea>
+
+        <div class="row">
+
+            <div>
+                <label>Дедлайн</label>
+                <input id="edit-task-deadline-${task.id}" type="date" value="${task.deadline || ""}">
+            </div>
+
+            <div>
+                <label>Бали</label>
+                <div class="points-control">
+                    <button type="button" onclick="changeEditPoints(${task.id}, -1)">−</button>
+                    <input id="edit-task-points-${task.id}" type="number" min="0" value="${Number(task.points || 0)}">
+                    <button type="button" onclick="changeEditPoints(${task.id}, 1)">+</button>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+
+            <div>
+                <label>Приблизний час</label>
+                <input id="edit-task-duration-${task.id}" type="number" min="1" value="${durationValue}">
+            </div>
+
+            <div>
+                <label>Одиниця часу</label>
+                <select id="edit-task-duration-unit-${task.id}">
+                    <option value="minutes" ${durationUnit === "minutes" ? "selected" : ""}>хвилин</option>
+                    <option value="hours" ${durationUnit === "hours" ? "selected" : ""}>годин</option>
+                </select>
+            </div>
+
+        </div>
+
+        <label>Матеріал</label>
+        <input id="edit-task-material-${task.id}" value="${escapeAttribute(task.material || "")}">
+
+        <div class="actions">
+            <button class="primary" onclick="saveTask(${task.id})">Зберегти</button>
+            <button onclick="toggleEditTask(${task.id})">Скасувати</button>
+        </div>
+
+        <div id="edit-task-status-${task.id}" class="status"></div>
+    `;
+}
+
+
+function renderEvents() {
+    const container = document.getElementById("eventsList");
+
+    if (!eventsCache.length) {
+        container.innerHTML = `<div class="empty">Подій поки немає.</div>`;
+        return;
+    }
+
+    container.innerHTML = eventsCache.map(event => {
+
+        const type = event.event_type || "";
+        const subject = event.subjects?.name || "";
+
+        const start = formatDateTime(event.start_at);
+        const end = event.end_at
+            ? formatDateTime(event.end_at)
+            : "";
+
+        return `
+            <div class="item">
+
+                <div class="item-header">
+
+                    <div>
+
+                        <div class="item-title">
+                            ${escapeHtml(event.title)}
+                        </div>
+
+                        <div class="item-meta">
+
+                            ${type
+                                ? `<span class="badge">${escapeHtml(type)}</span><br>`
+                                : ""
+                            }
+
+                            ${subject
+                                ? `Предмет: ${escapeHtml(subject)}<br>`
+                                : ""
+                            }
+
+                            ${escapeHtml(start)}
+
+                            ${end
+                                ? ` → ${escapeHtml(end)}`
+                                : ""
+                            }
+
+                        </div>
+
+                    </div>
+
+                    <div class="actions" style="margin-top:0">
+                        <button onclick="toggleEditEvent(${event.id})">Редагувати</button>
+                        <button class="danger" onclick="deleteEvent(${event.id})">Видалити</button>
+                    </div>
+
+                </div>
+
+                ${event.description
+                    ? `<div class="item-description">${escapeHtml(event.description)}</div>`
+                    : ""
+                }
+
+                ${event.info
+                    ? `<div class="item-info">ℹ ${escapeHtml(event.info)}</div>`
+                    : ""
+                }
+
+                ${event.link
+                    ? `<div class="item-link">
+                        <a href="${escapeAttribute(event.link)}" target="_blank" rel="noopener noreferrer">
+                            Відкрити посилання
+                        </a>
+                    </div>`
+                    : ""
+                }
+
+                <div id="edit-event-${event.id}" class="edit-form">
+                    ${eventEditForm(event)}
+                </div>
+
+            </div>
+        `;
+    }).join("");
+}
+
+
+function eventEditForm(event) {
+
+    const subjectOptions = subjectsCache.map(subject => `
+        <option value="${subject.id}" ${String(event.subject_id) === String(subject.id) ? "selected" : ""}>
+            ${escapeHtml(subject.name)}
+        </option>
+    `).join("");
+
+    const types = [
+        "",
+        "Семінар",
+        "Іспит",
+        "Залік",
+        "Консультація",
+        "Лекція",
+        "Особисте",
+        "Інше"
+    ];
+
+    const typeButtons = types.map(type => `
+        <button
+            type="button"
+            class="type-button ${event.event_type === type ? "active" : ""}"
+            data-edit-event-type="${event.id}"
+            data-type="${escapeAttribute(type)}"
+            onclick="selectEditEventType(this, ${event.id})"
+        >
+            ${type || "Без типу"}
+        </button>
+    `).join("");
+
+    return `
+        <label>Тип події</label>
+
+        <div class="type-buttons">
+            ${typeButtons}
+        </div>
+
+        <input
+            type="hidden"
+            id="edit-event-type-${event.id}"
+            value="${escapeAttribute(event.event_type || "")}"
+        >
+
+        <label>Предмет</label>
+
+        <select id="edit-event-subject-${event.id}">
+            <option value="">Без предмета</option>
+            ${subjectOptions}
+        </select>
+
+        <label>Назва</label>
+        <input id="edit-event-title-${event.id}" value="${escapeAttribute(event.title)}">
+
+        <label>Опис</label>
+        <textarea id="edit-event-description-${event.id}">${escapeHtml(event.description || "")}</textarea>
+
+        <div class="row">
+
+            <div>
+                <label>Початок</label>
+                <input
+                    id="edit-event-start-${event.id}"
+                    type="datetime-local"
+                    value="${toDateTimeLocal(event.start_at)}"
+                >
+            </div>
+
+            <div>
+                <label>Кінець</label>
+                <input
+                    id="edit-event-end-${event.id}"
+                    type="datetime-local"
+                    value="${toDateTimeLocal(event.end_at)}"
+                >
+            </div>
+
+        </div>
+
+        <label>Додаткова інформація</label>
+        <input id="edit-event-info-${event.id}" value="${escapeAttribute(event.info || "")}">
+
+        <label>Посилання</label>
+        <input id="edit-event-link-${event.id}" type="url" value="${escapeAttribute(event.link || "")}">
+
+        <div class="actions">
+            <button class="primary" onclick="saveEvent(${event.id})">Зберегти</button>
+            <button onclick="toggleEditEvent(${event.id})">Скасувати</button>
+        </div>
+
+        <div id="edit-event-status-${event.id}" class="status"></div>
+    `;
+}
+
+
+function toggleMenu(id) {
+    document.getElementById(id).classList.toggle("open");
+}
+
+
+function changePoints(amount) {
+    const input = document.getElementById("taskPoints");
+    const value = Math.max(0, Number(input.value || 0) + amount);
+    input.value = value;
+}
+
+
+function changeEditPoints(id, amount) {
+    const input = document.getElementById(`edit-task-points-${id}`);
+    const value = Math.max(0, Number(input.value || 0) + amount);
+    input.value = value;
+}
+
+
+function selectEventType(button) {
+    document.querySelectorAll("#eventTypeButtons .type-button").forEach(btn => {
+        btn.classList.remove("active");
+    });
+
+    button.classList.add("active");
+    selectedEventType = button.dataset.type;
+}
+
+
+function selectEditEventType(button, id) {
+    document
+        .querySelectorAll(`[data-edit-event-type="${id}"]`)
+        .forEach(btn => btn.classList.remove("active"));
+
+    button.classList.add("active");
+
+    document.getElementById(`edit-event-type-${id}`).value =
+        button.dataset.type;
+}
+
+
+function durationToMinutes(value, unit) {
+    const number = Number(value);
+
+    if (!number || number <= 0) {
+        return null;
+    }
+
+    if (unit === "hours") {
+        return Math.round(number * 60);
+    }
+
+    return Math.round(number);
+}
+
+
+async function addTask() {
+
+    const subjectId = document.getElementById("taskSubject").value;
+    const title = document.getElementById("taskTitle").value.trim();
+    const description = document.getElementById("taskDescription").value.trim();
+    const deadline = document.getElementById("taskDeadline").value || null;
+    const points = Math.max(0, Number(document.getElementById("taskPoints").value || 0));
+    const durationValue = document.getElementById("taskDuration").value;
+    const durationUnit = document.getElementById("taskDurationUnit").value;
+    const material = document.getElementById("taskMaterial").value.trim();
+
+    const status = document.getElementById("taskStatus");
+
+    status.textContent = "";
+
+    if (!title) {
+        status.textContent = "Введи назву завдання.";
+        status.className = "status error";
+        return;
+    }
+
+    const durationMinutes = durationToMinutes(
+        durationValue,
+        durationUnit
+    );
+
+    const { error } = await supabaseClient
+        .from("tasks")
+        .insert({
+            subject_id: subjectId ? Number(subjectId) : null,
+            title,
+            description: description || null,
+            deadline,
+            points,
+            duration_minutes: durationMinutes,
+            material: material || null
+        });
+
+    if (error) {
+        status.textContent = error.message;
+        status.className = "status error";
+        return;
+    }
+
+    status.textContent = "Завдання додано.";
+    status.className = "status success";
+
+    clearTaskForm();
+    await loadTasks();
+}
+
+
+async function addEvent() {
+
+    const subjectId = document.getElementById("eventSubject").value;
+    const title = document.getElementById("eventTitle").value.trim();
+    const description = document.getElementById("eventDescription").value.trim();
+    const start = document.getElementById("eventStart").value;
+    const end = document.getElementById("eventEnd").value;
+    const info = document.getElementById("eventInfo").value.trim();
+    const link = document.getElementById("eventLink").value.trim();
+
+    const status = document.getElementById("eventStatus");
+
+    status.textContent = "";
+
+    if (!title) {
+        status.textContent = "Введи назву події.";
+        status.className = "status error";
+        return;
+    }
+
+    if (!start) {
+        status.textContent = "Вкажи день події.";
+        status.className = "status error";
+        return;
+    }
+
+    if (end && new Date(end) < new Date(start)) {
+        status.textContent = "Кінець події не може бути раніше початку.";
+        status.className = "status error";
+        return;
+    }
+
+    const { error } = await supabaseClient
+        .from("events")
+        .insert({
+            title,
+            description: description || null,
+            start_at: new Date(start).toISOString(),
+            end_at: end ? new Date(end).toISOString() : null,
+            link: link || null,
+            info: info || null,
+            event_type: selectedEventType || null,
+            subject_id: subjectId ? Number(subjectId) : null
+        });
+
+    if (error) {
+        status.textContent = error.message;
+        status.className = "status error";
+        return;
+    }
+
+    status.textContent = "Подію додано.";
+    status.className = "status success";
+
+    clearEventForm();
+    await loadEvents();
+}
+
+
+async function saveTask(id) {
+
+    const subjectId = document.getElementById(`edit-task-subject-${id}`).value;
+    const title = document.getElementById(`edit-task-title-${id}`).value.trim();
+    const description = document.getElementById(`edit-task-description-${id}`).value.trim();
+    const deadline = document.getElementById(`edit-task-deadline-${id}`).value || null;
+    const points = Math.max(
+        0,
+        Number(document.getElementById(`edit-task-points-${id}`).value || 0)
+    );
+
+    const durationValue =
+        document.getElementById(`edit-task-duration-${id}`).value;
+
+    const durationUnit =
+        document.getElementById(`edit-task-duration-unit-${id}`).value;
+
+    const material =
+        document.getElementById(`edit-task-material-${id}`).value.trim();
+
+    const status =
+        document.getElementById(`edit-task-status-${id}`);
+
+    if (!title) {
+        status.textContent = "Назва не може бути порожньою.";
+        status.className = "status error";
+        return;
+    }
+
+    const durationMinutes = durationToMinutes(
+        durationValue,
+        durationUnit
+    );
+
+    const { error } = await supabaseClient
+        .from("tasks")
+        .update({
+            subject_id: subjectId ? Number(subjectId) : null,
+            title,
+            description: description || null,
+            deadline,
+            points,
+            duration_minutes: durationMinutes,
+            material: material || null
+        })
+        .eq("id", id);
+
+    if (error) {
+        status.textContent = error.message;
+        status.className = "status error";
+        return;
+    }
+
+    await loadTasks();
+}
+
+
+async function saveEvent(id) {
+
+    const type =
+        document.getElementById(`edit-event-type-${id}`).value;
+
+    const subjectId =
+        document.getElementById(`edit-event-subject-${id}`).value;
+
+    const title =
+        document.getElementById(`edit-event-title-${id}`).value.trim();
+
+    const description =
+        document.getElementById(`edit-event-description-${id}`).value.trim();
+
+    const start =
+        document.getElementById(`edit-event-start-${id}`).value;
+
+    const end =
+        document.getElementById(`edit-event-end-${id}`).value;
+
+    const info =
+        document.getElementById(`edit-event-info-${id}`).value.trim();
+
+    const link =
+        document.getElementById(`edit-event-link-${id}`).value.trim();
+
+    const status =
+        document.getElementById(`edit-event-status-${id}`);
+
+    if (!title) {
+        status.textContent = "Назва не може бути порожньою.";
+        status.className = "status error";
+        return;
+    }
+
+    if (!start) {
+        status.textContent = "Вкажи день події.";
+        status.className = "status error";
+        return;
+    }
+
+    if (end && new Date(end) < new Date(start)) {
+        status.textContent = "Кінець не може бути раніше початку.";
+        status.className = "status error";
+        return;
+    }
+
+    const { error } = await supabaseClient
+        .from("events")
+        .update({
+            title,
+            description: description || null,
+            start_at: new Date(start).toISOString(),
+            end_at: end ? new Date(end).toISOString() : null,
+            link: link || null,
+            info: info || null,
+            event_type: type || null,
+            subject_id: subjectId ? Number(subjectId) : null
+        })
+        .eq("id", id);
+
+    if (error) {
+        status.textContent = error.message;
+        status.className = "status error";
+        return;
+    }
+
+    await loadEvents();
+}
+
+
+async function deleteTask(id) {
+
+    const task = tasksCache.find(item => item.id === id);
+
+    if (!task) {
+        return;
+    }
+
+    if (!confirm(`Видалити завдання «${task.title}»?`)) {
+        return;
+    }
+
+    const { error } = await supabaseClient
+        .from("tasks")
+        .delete()
+        .eq("id", id);
+
+    if (error) {
+        alert(error.message);
+        return;
+    }
+
+    await loadTasks();
+}
+
+
+async function deleteEvent(id) {
+
+    const event = eventsCache.find(item => item.id === id);
+
+    if (!event) {
+        return;
+    }
+
+    if (!confirm(`Видалити подію «${event.title}»?`)) {
+        return;
+    }
+
+    const { error } = await supabaseClient
+        .from("events")
+        .delete()
+        .eq("id", id);
+
+    if (error) {
+        alert(error.message);
+        return;
+    }
+
+    await loadEvents();
+}
+
+
+function toggleEditTask(id) {
+    document.getElementById(`edit-task-${id}`).classList.toggle("open");
+}
+
+
+function toggleEditEvent(id) {
+    document.getElementById(`edit-event-${id}`).classList.toggle("open");
+}
+
+
+function clearTaskForm() {
+
+    document.getElementById("taskSubject").value = "";
+    document.getElementById("taskTitle").value = "";
+    document.getElementById("taskDescription").value = "";
+    document.getElementById("taskDeadline").value = "";
+    document.getElementById("taskPoints").value = "0";
+    document.getElementById("taskDuration").value = "";
+    document.getElementById("taskDurationUnit").value = "minutes";
+    document.getElementById("taskMaterial").value = "";
+}
+
+
+function clearEventForm() {
+
+    document.getElementById("eventSubject").value = "";
+    document.getElementById("eventTitle").value = "";
+    document.getElementById("eventDescription").value = "";
+    document.getElementById("eventStart").value = "";
+    document.getElementById("eventEnd").value = "";
+    document.getElementById("eventInfo").value = "";
+    document.getElementById("eventLink").value = "";
+
+    selectedEventType = "";
+
+    document.querySelectorAll("#eventTypeButtons .type-button").forEach(btn => {
+        btn.classList.remove("active");
+    });
+
+    document
+        .querySelector('#eventTypeButtons .type-button[data-type=""]')
+        .classList.add("active");
+}
+
+
+function formatDate(date) {
+
+    if (!date) {
+        return "";
+    }
+
+    const parts = date.split("-");
+
+    if (parts.length !== 3) {
+        return date;
+    }
+
+    return `${parts[2]}.${parts[1]}.${parts[0]}`;
+}
+
+
+function formatDateTime(value) {
+
+    if (!value) {
+        return "";
+    }
+
+    const date = new Date(value);
+
+    return date.toLocaleString("uk-UA", {
+        dateStyle: "short",
+        timeStyle: "short"
+    });
+}
+
+
+function toDateTimeLocal(value) {
+
+    if (!value) {
+        return "";
+    }
+
+    const date = new Date(value);
+
+    const pad = number => String(number).padStart(2, "0");
+
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+
+function escapeHtml(value) {
+
+    return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+
+function escapeAttribute(value) {
+    return escapeHtml(value);
+}
+
+</script>
+
+</body>
+</html>
