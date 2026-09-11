@@ -311,6 +311,78 @@ body {
     padding: 10px 0;
 }
 
+.upcoming-item {
+    background: #252525;
+    border-radius: 13px;
+    padding: 13px 14px;
+    margin-bottom: 9px;
+    border-left: 3px solid #777;
+}
+
+.upcoming-item:last-child {
+    margin-bottom: 0;
+}
+
+.upcoming-item.event-upcoming {
+    border-left-color: #4da3ff;
+}
+
+.upcoming-label {
+    color: #999;
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+
+.upcoming-label.event-upcoming {
+    color: #4da3ff;
+}
+
+.upcoming-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.upcoming-info {
+    color: #aaa;
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.upcoming-description {
+    color: #cfcfcf;
+    font-size: 13px;
+    line-height: 1.45;
+    margin-top: 7px;
+}
+
+.upcoming-extra {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.upcoming-extra span {
+    background: #303030;
+    border-radius: 8px;
+    padding: 5px 8px;
+    color: #bbb;
+    font-size: 12px;
+}
+
+.upcoming-link {
+    display: inline-block;
+    margin-top: 8px;
+    color: #8ab4f8;
+    text-decoration: none;
+    font-size: 13px;
+}
+
+.upcoming-link:hover {
+    text-decoration: underline;
+}
+
 @media (max-width: 600px) {
     .container {
         padding: 12px;
@@ -551,44 +623,202 @@ async function loadEvents() {
 
     renderCalendar();
     renderSelectedDay();
+    renderTasks();
+}
+
+function getUpcomingTaskDate(task) {
+    if (!task.deadline) {
+        return null;
+    }
+
+    const deadline = new Date(`${task.deadline}T23:59:59`);
+
+    if (task.start_time) {
+        const match = String(task.start_time).match(/(\d{2}):(\d{2})/);
+
+        if (match) {
+            deadline.setHours(
+                Number(match[1]),
+                Number(match[2]),
+                0,
+                0
+            );
+        }
+    }
+
+    return deadline;
+}
+
+function getUpcomingEventDate(event) {
+    if (!event.start_at) {
+        return null;
+    }
+
+    const date = new Date(event.start_at);
+
+    if (Number.isNaN(date.getTime())) {
+        return null;
+    }
+
+    return date;
 }
 
 function renderTasks() {
     const container = document.getElementById("tasksList");
+    const now = new Date();
 
-    const todayKey = formatDateKey(today);
+    const upcomingTasks = tasks
+        .map(task => ({
+            type: "task",
+            data: task,
+            date: getUpcomingTaskDate(task)
+        }))
+        .filter(item => {
+            if (!item.date) return true;
 
-    const visibleTasks = [...tasks]
-        .filter(task => {
-            if (!task.deadline) return true;
-            return task.deadline >= todayKey;
-        })
+            const endDate = item.data.end_time
+                ? new Date(item.date)
+                : item.date;
+
+            if (item.data.end_time && item.data.deadline) {
+                const match = String(item.data.end_time).match(/(\d{2}):(\d{2})/);
+
+                if (match) {
+                    endDate.setHours(
+                        Number(match[1]),
+                        Number(match[2]),
+                        0,
+                        0
+                    );
+                }
+            }
+
+            return endDate >= now;
+        });
+
+    const upcomingEvents = events
+        .map(event => ({
+            type: "event",
+            data: event,
+            date: getUpcomingEventDate(event)
+        }))
+        .filter(item => item.date && item.date >= now);
+
+    const upcomingItems = [
+        ...upcomingTasks,
+        ...upcomingEvents
+    ]
         .sort((a, b) => {
-            if (!a.deadline && !b.deadline) return 0;
-            if (!a.deadline) return 1;
-            if (!b.deadline) return -1;
+            if (!a.date && !b.date) return 0;
+            if (!a.date) return 1;
+            if (!b.date) return -1;
 
-            return a.deadline.localeCompare(b.deadline);
+            return a.date - b.date;
         })
         .slice(0, 5);
 
-    if (!visibleTasks.length) {
+    if (!upcomingItems.length) {
         container.innerHTML =
-            `<div class="empty">Завдань поки немає.</div>`;
+            `<div class="empty">Найближчих завдань немає.</div>`;
         return;
     }
 
-    container.innerHTML = visibleTasks.map(task => {
-        const subject = task.subjects?.name || "Предмет не вказано";
+    container.innerHTML = upcomingItems.map(item => {
+        if (item.type === "event") {
+            const event = item.data;
+            const type = getEventType(event);
+
+            let time = "";
+
+            if (event.start_at) {
+                const start = new Date(event.start_at);
+
+                if (!Number.isNaN(start.getTime())) {
+                    const day = String(start.getDate()).padStart(2, "0");
+                    const month = String(start.getMonth() + 1).padStart(2, "0");
+                    const hours = String(start.getHours()).padStart(2, "0");
+                    const minutes = String(start.getMinutes()).padStart(2, "0");
+
+                    time = `${day}.${month} · ${hours}:${minutes}`;
+
+                    if (event.end_at) {
+                        const end = new Date(event.end_at);
+
+                        if (!Number.isNaN(end.getTime())) {
+                            time += `–${String(end.getHours()).padStart(2, "0")}:${String(end.getMinutes()).padStart(2, "0")}`;
+                        }
+                    }
+                }
+            }
+
+            return `
+                <div class="upcoming-item event-upcoming">
+                    <div class="upcoming-label event-upcoming">
+                        * ${escapeHtml(type)}
+                    </div>
+
+                    <div class="upcoming-title">
+                        ${escapeHtml(event.title || "Подія")}
+                    </div>
+
+                    ${
+                        time
+                        ? `
+                            <div class="upcoming-info">
+                                ${escapeHtml(time)}
+                            </div>
+                        `
+                        : ""
+                    }
+
+                    ${
+                        event.description
+                        ? `
+                            <div class="upcoming-description">
+                                ${escapeHtml(event.description)}
+                            </div>
+                        `
+                        : ""
+                    }
+
+                    ${
+                        event.location || event.link
+                        ? `
+                            <div class="upcoming-extra">
+                                ${
+                                    event.location
+                                    ? `<span>📍 ${escapeHtml(event.location)}</span>`
+                                    : ""
+                                }
+                            </div>
+                        `
+                        : ""
+                    }
+
+                    ${
+                        event.link
+                        ? `
+                            <a class="upcoming-link"
+                               href="${escapeHtml(event.link)}"
+                               target="_blank"
+                               rel="noopener noreferrer">
+                                Відкрити
+                            </a>
+                        `
+                        : ""
+                    }
+                </div>
+            `;
+        }
+
+        const task = item.data;
+        const subject =
+            task.subjects?.name || "Предмет не вказано";
 
         let info = "";
 
         if (task.deadline) {
-            info += `
-                <div class="info">
-                    Дедлайн: ${escapeHtml(formatDateOnly(task.deadline))}
-                </div>
-            `;
+            info += `Дедлайн: ${escapeHtml(formatDateOnly(task.deadline))}`;
         }
 
         if (task.start_time) {
@@ -597,53 +827,66 @@ function renderTasks() {
                 ? formatTime(task.end_time)
                 : "";
 
-            info += `
-                <div class="info">
-                    Час виконання: ${escapeHtml(start)}${end ? "–" + escapeHtml(end) : ""}
-                </div>
-            `;
+            if (info) info += " · ";
+
+            info += `Час: ${escapeHtml(start)}${end ? "–" + escapeHtml(end) : ""}`;
         }
 
-        if (task.points !== null && task.points !== undefined) {
-            info += `
-                <div class="info">
-                    Бали: ${escapeHtml(task.points)}
-                </div>
-            `;
+        const extra = [];
+
+        if (task.points !== null && task.points !== undefined && task.points !== "") {
+            extra.push(`<span>Бали: ${escapeHtml(task.points)}</span>`);
         }
 
         return `
-            <div class="task">
-                <div class="task-subject">
-                    ${escapeHtml(subject)}
+            <div class="upcoming-item">
+                <div class="upcoming-label">
+                    ● ${escapeHtml(subject)}
                 </div>
 
-                <div class="task-title">
+                <div class="upcoming-title">
                     ${escapeHtml(task.title)}
                 </div>
 
                 ${
+                    info
+                    ? `
+                        <div class="upcoming-info">
+                            ${info}
+                        </div>
+                    `
+                    : ""
+                }
+
+                ${
                     task.description
                     ? `
-                        <div class="task-description">
+                        <div class="upcoming-description">
                             ${escapeHtml(task.description)}
                         </div>
                     `
                     : ""
                 }
 
-                <div class="task-info">
-                    ${info}
-                </div>
+                ${
+                    extra.length
+                    ? `
+                        <div class="upcoming-extra">
+                            ${extra.join("")}
+                        </div>
+                    `
+                    : ""
+                }
 
                 ${
                     task.material
                     ? `
-                        <div>
-                            <span class="material">
-                                Матеріал: ${escapeHtml(task.material)}
-                            </span>
-                        </div>
+                        <a class="upcoming-link"
+                           href="${escapeHtml(task.material)}"
+                           target="_blank"
+                           rel="noopener noreferrer">
+                            Матеріали
+                        </a>
                     `
                     : ""
                 }
@@ -958,6 +1201,10 @@ function changeMonth(offset) {
 showCurrentDate();
 loadTasks();
 loadEvents();
+
+setInterval(() => {
+    renderTasks();
+}, 60000);
 </script>
 
 </body>
