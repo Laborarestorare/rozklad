@@ -216,6 +216,60 @@ button:hover {
     color: #111;
 }
 
+.day-buttons,
+.week-buttons {
+    display: grid;
+    gap: 8px;
+}
+
+.day-buttons {
+    grid-template-columns: repeat(5, 1fr);
+}
+
+.week-buttons {
+    grid-template-columns: 1fr 1fr;
+}
+
+.day-button,
+.week-button {
+    background: #252525;
+    border: 1px solid #383838;
+}
+
+.day-button.active,
+.week-button.active {
+    background: #eeeeee;
+    color: #111;
+}
+
+.lesson-card {
+    background: #242424;
+    border-radius: 14px;
+    padding: 17px;
+    margin-top: 12px;
+}
+
+.lesson-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.lesson-number {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.lesson-time {
+    color: #999;
+    font-size: 14px;
+}
+
+.lesson-card .actions {
+    margin-top: 14px;
+}
+
 .item {
     background: #242424;
     border-radius: 14px;
@@ -309,10 +363,41 @@ button:hover {
     color: #ddd;
 }
 
+.schedule-editor {
+    display: none;
+}
+
+.schedule-editor.open {
+    display: block;
+}
+
+.schedule-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.schedule-top h2 {
+    margin: 0;
+}
+
+.settings-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+}
+
 @media (max-width: 650px) {
     .row,
-    .row-three {
+    .row-three,
+    .settings-grid {
         grid-template-columns: 1fr;
+    }
+
+    .day-buttons {
+        grid-template-columns: repeat(3, 1fr);
     }
 
     .topbar {
@@ -324,8 +409,11 @@ button:hover {
         width: 100%;
     }
 
-    .item-header {
+    .item-header,
+    .lesson-header,
+    .schedule-top {
         flex-direction: column;
+        align-items: flex-start;
     }
 
     .container {
@@ -359,161 +447,254 @@ button:hover {
 <div id="adminView" class="container hidden">
 
     <div class="topbar">
-        <h1>Адмінка</h1>
+        <h1 id="pageTitle">Адмінка</h1>
 
         <div class="topbar-actions">
-            <button class="schedule-button" onclick="window.location.href='index.html'">Розклад</button>
+            <button id="scheduleButton" class="schedule-button" onclick="openScheduleEditor()">Розклад</button>
+            <button id="backAdminButton" class="schedule-button hidden" onclick="closeScheduleEditor()">Адмінка</button>
             <button onclick="logout()">Вийти</button>
         </div>
     </div>
 
 
-    <div class="card">
+    <div id="adminContent">
 
-        <button class="menu-button" onclick="toggleMenu('taskForm')">
-            <span>Додати домашнє завдання</span>
-            <span>+</span>
-        </button>
+        <div class="card">
 
-        <div id="taskForm" class="form-content">
+            <button class="menu-button" onclick="toggleMenu('taskForm')">
+                <span>Додати домашнє завдання</span>
+                <span>+</span>
+            </button>
 
-            <label for="taskSubject">Предмет</label>
-            <select id="taskSubject">
-                <option value="">Предмет не вибрано</option>
-            </select>
+            <div id="taskForm" class="form-content">
 
-            <label for="taskTitle">Назва</label>
-            <input id="taskTitle" type="text" placeholder="Наприклад: Вивчити §5">
+                <label for="taskSubject">Предмет</label>
+                <select id="taskSubject">
+                    <option value="">Предмет не вибрано</option>
+                </select>
 
-            <label for="taskDescription">Опис</label>
-            <textarea id="taskDescription" placeholder="Додатковий опис"></textarea>
+                <label for="taskTitle">Назва</label>
+                <input id="taskTitle" type="text" placeholder="Наприклад: Вивчити §5">
 
-            <div class="row">
+                <label for="taskDescription">Опис</label>
+                <textarea id="taskDescription" placeholder="Додатковий опис"></textarea>
 
-                <div>
-                    <label for="taskDeadline">Дедлайн</label>
-                    <input id="taskDeadline" type="date">
-                    <div class="small">Можна залишити порожнім.</div>
-                </div>
+                <div class="row">
 
-                <div>
-                    <label>Бали</label>
-
-                    <div class="points-control">
-                        <button type="button" onclick="changePoints(-1)">−</button>
-                        <input id="taskPoints" type="number" min="0" value="0">
-                        <button type="button" onclick="changePoints(1)">+</button>
+                    <div>
+                        <label for="taskDeadline">Дедлайн</label>
+                        <input id="taskDeadline" type="date">
+                        <div class="small">Можна залишити порожнім.</div>
                     </div>
+
+                    <div>
+                        <label>Бали</label>
+
+                        <div class="points-control">
+                            <button type="button" onclick="changePoints(-1)">−</button>
+                            <input id="taskPoints" type="number" min="0" value="0">
+                            <button type="button" onclick="changePoints(1)">+</button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row">
+
+                    <div>
+                        <label for="taskDuration">Приблизний час виконання</label>
+                        <input id="taskDuration" type="number" min="1" placeholder="20">
+                    </div>
+
+                    <div>
+                        <label for="taskDurationUnit">Одиниця часу</label>
+                        <select id="taskDurationUnit">
+                            <option value="minutes">хвилин</option>
+                            <option value="hours">годин</option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <label for="taskMaterial">Матеріал</label>
+                <input id="taskMaterial" type="text" placeholder="Посилання або назва матеріалу">
+
+                <div class="actions">
+                    <button class="primary" onclick="addTask()">Додати</button>
+                    <button onclick="clearTaskForm()">Очистити</button>
+                </div>
+
+                <div id="taskStatus" class="status"></div>
+
+            </div>
+        </div>
+
+
+        <div class="card">
+
+            <button class="menu-button" onclick="toggleMenu('eventForm')">
+                <span>Додати подію</span>
+                <span>+</span>
+            </button>
+
+            <div id="eventForm" class="form-content">
+
+                <label>Тип події</label>
+
+                <div id="eventTypeButtons" class="type-buttons">
+                    <button type="button" class="type-button active" data-type="" onclick="selectEventType(this)">Без типу</button>
+                    <button type="button" class="type-button" data-type="Семінар" onclick="selectEventType(this)">Семінар</button>
+                    <button type="button" class="type-button" data-type="Іспит" onclick="selectEventType(this)">Іспит</button>
+                    <button type="button" class="type-button" data-type="Залік" onclick="selectEventType(this)">Залік</button>
+                    <button type="button" class="type-button" data-type="Консультація" onclick="selectEventType(this)">Консультація</button>
+                    <button type="button" class="type-button" data-type="Лекція" onclick="selectEventType(this)">Лекція</button>
+                    <button type="button" class="type-button" data-type="Особисте" onclick="selectEventType(this)">Особисте</button>
+                    <button type="button" class="type-button" data-type="Інше" onclick="selectEventType(this)">Інше</button>
+                </div>
+
+                <label for="eventSubject">Предмет</label>
+                <select id="eventSubject">
+                    <option value="">Без предмета</option>
+                </select>
+
+                <label for="eventTitle">Назва</label>
+                <input id="eventTitle" type="text" placeholder="Необов'язково">
+
+                <label for="eventDescription">Опис</label>
+                <textarea id="eventDescription" placeholder="Додатковий опис"></textarea>
+
+                <div class="row">
+
+                    <div>
+                        <label for="eventStart">Початок</label>
+                        <input id="eventStart" type="datetime-local">
+                        <div class="small">Можна вказати лише день або день і час.</div>
+                    </div>
+
+                    <div>
+                        <label for="eventEnd">Кінець</label>
+                        <input id="eventEnd" type="datetime-local">
+                        <div class="small">Можна залишити порожнім.</div>
+                    </div>
+
+                </div>
+
+                <label for="eventInfo">Додаткова інформація</label>
+                <input id="eventInfo" type="text" placeholder="Наприклад: аудиторія 204">
+
+                <label for="eventLink">Посилання</label>
+                <input id="eventLink" type="url" placeholder="https://...">
+
+                <div class="actions">
+                    <button class="primary" onclick="addEvent()">Додати</button>
+                    <button onclick="clearEventForm()">Очистити</button>
+                </div>
+
+                <div id="eventStatus" class="status"></div>
+
+            </div>
+        </div>
+
+
+        <div class="card">
+            <h2>Домашні завдання</h2>
+            <div id="tasksList"></div>
+        </div>
+
+
+        <div class="card">
+            <h2>Події</h2>
+            <div id="eventsList"></div>
+        </div>
+
+    </div>
+
+
+    <div id="scheduleEditor" class="schedule-editor">
+
+        <div class="card">
+
+            <div class="schedule-top">
+                <div>
+                    <h2>Редагування розкладу</h2>
+                    <div class="small">Розклад зберігається у Supabase і автоматично використовується index.html.</div>
+                </div>
+
+                <button onclick="closeScheduleEditor()">← Адмінка</button>
+            </div>
+
+            <h3>Налаштування семестру</h3>
+
+            <div class="settings-grid">
+
+                <div>
+                    <label for="scheduleStart">Початок розкладу</label>
+                    <input id="scheduleStart" type="date">
+                </div>
+
+                <div>
+                    <label for="scheduleEnd">Кінець розкладу</label>
+                    <input id="scheduleEnd" type="date">
+                </div>
+
+                <div>
+                    <label for="upperWeekStart">Початок верхнього тижня</label>
+                    <input id="upperWeekStart" type="date">
                 </div>
 
             </div>
-
-            <div class="row">
-
-                <div>
-                    <label for="taskDuration">Приблизний час виконання</label>
-                    <input id="taskDuration" type="number" min="1" placeholder="20">
-                </div>
-
-                <div>
-                    <label for="taskDurationUnit">Одиниця часу</label>
-                    <select id="taskDurationUnit">
-                        <option value="minutes">хвилин</option>
-                        <option value="hours">годин</option>
-                    </select>
-                </div>
-
-            </div>
-
-            <label for="taskMaterial">Матеріал</label>
-            <input id="taskMaterial" type="text" placeholder="Посилання або назва матеріалу">
 
             <div class="actions">
-                <button class="primary" onclick="addTask()">Додати</button>
-                <button onclick="clearTaskForm()">Очистити</button>
+                <button class="primary" onclick="saveScheduleSettings()">Зберегти налаштування</button>
             </div>
 
-            <div id="taskStatus" class="status"></div>
+            <div id="scheduleSettingsStatus" class="status"></div>
 
         </div>
-    </div>
 
 
-    <div class="card">
+        <div class="card">
 
-        <button class="menu-button" onclick="toggleMenu('eventForm')">
-            <span>Додати подію</span>
-            <span>+</span>
-        </button>
+            <h3>Тиждень</h3>
 
-        <div id="eventForm" class="form-content">
+            <div class="week-buttons">
+                <button id="weekUpperButton" class="week-button active" onclick="selectScheduleWeek('upper')">
+                    Верхній тиждень
+                </button>
 
-            <label>Тип події</label>
-
-            <div id="eventTypeButtons" class="type-buttons">
-                <button type="button" class="type-button active" data-type="" onclick="selectEventType(this)">Без типу</button>
-                <button type="button" class="type-button" data-type="Семінар" onclick="selectEventType(this)">Семінар</button>
-                <button type="button" class="type-button" data-type="Іспит" onclick="selectEventType(this)">Іспит</button>
-                <button type="button" class="type-button" data-type="Залік" onclick="selectEventType(this)">Залік</button>
-                <button type="button" class="type-button" data-type="Консультація" onclick="selectEventType(this)">Консультація</button>
-                <button type="button" class="type-button" data-type="Лекція" onclick="selectEventType(this)">Лекція</button>
-                <button type="button" class="type-button" data-type="Особисте" onclick="selectEventType(this)">Особисте</button>
-                <button type="button" class="type-button" data-type="Інше" onclick="selectEventType(this)">Інше</button>
+                <button id="weekLowerButton" class="week-button" onclick="selectScheduleWeek('lower')">
+                    Нижній тиждень
+                </button>
             </div>
-
-            <label for="eventSubject">Предмет</label>
-            <select id="eventSubject">
-                <option value="">Без предмета</option>
-            </select>
-
-            <label for="eventTitle">Назва</label>
-            <input id="eventTitle" type="text" placeholder="Наприклад: День народження">
-
-            <label for="eventDescription">Опис</label>
-            <textarea id="eventDescription" placeholder="Додатковий опис"></textarea>
-
-            <div class="row">
-
-                <div>
-                    <label for="eventStart">Початок</label>
-                    <input id="eventStart" type="datetime-local">
-                    <div class="small">Можна вказати лише день або день і час.</div>
-                </div>
-
-                <div>
-                    <label for="eventEnd">Кінець</label>
-                    <input id="eventEnd" type="datetime-local">
-                    <div class="small">Можна залишити порожнім.</div>
-                </div>
-
-            </div>
-
-            <label for="eventInfo">Додаткова інформація</label>
-            <input id="eventInfo" type="text" placeholder="Наприклад: аудиторія 204">
-
-            <label for="eventLink">Посилання</label>
-            <input id="eventLink" type="url" placeholder="https://...">
-
-            <div class="actions">
-                <button class="primary" onclick="addEvent()">Додати</button>
-                <button onclick="clearEventForm()">Очистити</button>
-            </div>
-
-            <div id="eventStatus" class="status"></div>
 
         </div>
-    </div>
 
 
-    <div class="card">
-        <h2>Домашні завдання</h2>
-        <div id="tasksList"></div>
-    </div>
+        <div class="card">
+
+            <h3>День</h3>
+
+            <div class="day-buttons">
+                <button id="day-Понеділок" class="day-button active" onclick="selectScheduleDay('Понеділок')">Пн</button>
+                <button id="day-Вівторок" class="day-button" onclick="selectScheduleDay('Вівторок')">Вт</button>
+                <button id="day-Середа" class="day-button" onclick="selectScheduleDay('Середа')">Ср</button>
+                <button id="day-Четвер" class="day-button" onclick="selectScheduleDay('Четвер')">Чт</button>
+                <button id="day-П’ятниця" class="day-button" onclick="selectScheduleDay('П’ятниця')">Пт</button>
+            </div>
+
+        </div>
 
 
-    <div class="card">
-        <h2>Події</h2>
-        <div id="eventsList"></div>
+        <div class="card">
+
+            <h3 id="scheduleDayTitle">Понеділок · Верхній тиждень</h3>
+
+            <div id="lessonsEditor"></div>
+
+            <div id="scheduleEditorStatus" class="status"></div>
+
+        </div>
+
     </div>
 
 </div>
@@ -537,8 +718,25 @@ let tasksCache = [];
 let eventsCache = [];
 let selectedEventType = "";
 
+let scheduleCache = [];
+let semesterSettings = null;
+let selectedScheduleDay = "Понеділок";
+let selectedScheduleWeek = "upper";
+
+let scheduleSaveMessage = "";
+let scheduleSaveMessageType = "";
+
+
+const lessonTimes = {
+    1: ["08:20", "09:40"],
+    2: ["09:50", "11:10"],
+    3: ["11:30", "12:50"],
+    4: ["13:00", "14:20"]
+};
+
 
 document.addEventListener("DOMContentLoaded", async () => {
+
     const { data } = await supabaseClient.auth.getSession();
 
     if (data.session) {
@@ -549,13 +747,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     supabaseClient.auth.onAuthStateChange(async (event, session) => {
+
         if (session) {
             showAdmin();
             await loadAll();
         } else {
             showLogin();
         }
+
     });
+
 });
 
 
@@ -572,6 +773,7 @@ function showAdmin() {
 
 
 async function login() {
+
     const email = document.getElementById("loginEmail").value.trim();
     const password = document.getElementById("loginPassword").value;
 
@@ -610,10 +812,12 @@ async function loadAll() {
     await loadSubjects();
     await loadTasks();
     await loadEvents();
+    await loadSchedule();
 }
 
 
 async function loadSubjects() {
+
     const { data, error } = await supabaseClient
         .from("subjects")
         .select("id, name")
@@ -632,6 +836,7 @@ async function loadSubjects() {
 
 
 function fillSubjectSelect(id, emptyText) {
+
     const select = document.getElementById(id);
 
     select.innerHTML = "";
@@ -639,18 +844,25 @@ function fillSubjectSelect(id, emptyText) {
     const emptyOption = document.createElement("option");
     emptyOption.value = "";
     emptyOption.textContent = emptyText;
+
     select.appendChild(emptyOption);
 
     subjectsCache.forEach(subject => {
+
         const option = document.createElement("option");
+
         option.value = subject.id;
         option.textContent = subject.name;
+
         select.appendChild(option);
+
     });
+
 }
 
 
 async function loadTasks() {
+
     const { data, error } = await supabaseClient
         .from("tasks")
         .select(`
@@ -671,18 +883,24 @@ async function loadTasks() {
         .order("created_at", { ascending: false });
 
     if (error) {
+
         console.error(error);
+
         document.getElementById("tasksList").innerHTML =
             `<div class="error">Помилка завантаження: ${escapeHtml(error.message)}</div>`;
+
         return;
     }
 
     tasksCache = data || [];
+
     renderTasks();
+
 }
 
 
 async function loadEvents() {
+
     const { data, error } = await supabaseClient
         .from("events")
         .select(`
@@ -703,37 +921,125 @@ async function loadEvents() {
         .order("start_at", { ascending: true });
 
     if (error) {
+
         console.error(error);
+
         document.getElementById("eventsList").innerHTML =
             `<div class="error">Помилка завантаження: ${escapeHtml(error.message)}</div>`;
+
         return;
     }
 
     eventsCache = data || [];
+
     renderEvents();
+
+}
+
+
+async function loadSchedule() {
+
+    const settingsResult = await supabaseClient
+        .from("schedule_settings")
+        .select("*")
+        .eq("id", 1)
+        .maybeSingle();
+
+    if (settingsResult.error) {
+
+        console.error(settingsResult.error);
+
+        document.getElementById("scheduleSettingsStatus").textContent =
+            settingsResult.error.message;
+
+        document.getElementById("scheduleSettingsStatus").className =
+            "status error";
+
+    } else {
+
+        semesterSettings = settingsResult.data || null;
+
+        if (semesterSettings) {
+
+            document.getElementById("scheduleStart").value =
+                semesterSettings.schedule_start || "";
+
+            document.getElementById("scheduleEnd").value =
+                semesterSettings.schedule_end || "";
+
+            document.getElementById("upperWeekStart").value =
+                semesterSettings.upper_week_start || "";
+
+        }
+
+    }
+
+
+    const scheduleResult = await supabaseClient
+        .from("schedule")
+        .select(`
+            id,
+            day_of_week,
+            week_type,
+            lesson_number,
+            subject_id,
+            teacher,
+            room,
+            links,
+            subjects (
+                name
+            )
+        `)
+        .order("lesson_number", { ascending: true });
+
+
+    if (scheduleResult.error) {
+
+        console.error(scheduleResult.error);
+
+        document.getElementById("scheduleEditorStatus").textContent =
+            scheduleResult.error.message;
+
+        document.getElementById("scheduleEditorStatus").className =
+            "status error";
+
+        return;
+    }
+
+    scheduleCache = scheduleResult.data || [];
+
+    renderScheduleEditor();
+
 }
 
 
 function renderTasks() {
+
     const container = document.getElementById("tasksList");
 
     if (!tasksCache.length) {
-        container.innerHTML = `<div class="empty">Домашніх завдань поки немає.</div>`;
+
+        container.innerHTML =
+            `<div class="empty">Домашніх завдань поки немає.</div>`;
+
         return;
     }
 
     container.innerHTML = tasksCache.map(task => {
 
-        const subject = task.subjects?.name || "Предмет не вказано";
+        const subject =
+            task.subjects?.name || "Предмет не вказано";
 
         let duration = "";
 
         if (task.duration_minutes) {
+
             if (task.duration_minutes % 60 === 0) {
                 duration = `${task.duration_minutes / 60} год.`;
             } else {
                 duration = `${task.duration_minutes} хв.`;
             }
+
         }
 
         const deadline = task.deadline
@@ -746,7 +1052,10 @@ function renderTasks() {
                 <div class="item-header">
 
                     <div>
-                        <div class="item-title">${escapeHtml(task.title)}</div>
+
+                        <div class="item-title">
+                            ${escapeHtml(task.title)}
+                        </div>
 
                         <div class="item-meta">
                             ${escapeHtml(subject)}
@@ -756,11 +1065,19 @@ function renderTasks() {
                             <br>
                             Бали: ${Number(task.points || 0)}
                         </div>
+
                     </div>
 
                     <div class="actions" style="margin-top:0">
-                        <button onclick="toggleEditTask(${task.id})">Редагувати</button>
-                        <button class="danger" onclick="deleteTask(${task.id})">Видалити</button>
+
+                        <button onclick="toggleEditTask(${task.id})">
+                            Редагувати
+                        </button>
+
+                        <button class="danger" onclick="deleteTask(${task.id})">
+                            Видалити
+                        </button>
+
                     </div>
 
                 </div>
@@ -785,7 +1102,9 @@ function renderTasks() {
 
             </div>
         `;
+
     }).join("");
+
 }
 
 
@@ -801,17 +1120,24 @@ function taskEditForm(task) {
     let durationUnit = "minutes";
 
     if (task.duration_minutes) {
+
         if (task.duration_minutes % 60 === 0) {
+
             durationValue = task.duration_minutes / 60;
             durationUnit = "hours";
+
         } else {
+
             durationValue = task.duration_minutes;
             durationUnit = "minutes";
+
         }
+
     }
 
     return `
         <label>Предмет</label>
+
         <select id="edit-task-subject-${task.id}">
             <option value="">Предмет не вибрано</option>
             ${subjectOptions}
@@ -832,11 +1158,21 @@ function taskEditForm(task) {
 
             <div>
                 <label>Бали</label>
+
                 <div class="points-control">
-                    <button type="button" onclick="changeEditPoints(${task.id}, -1)">−</button>
+
+                    <button type="button" onclick="changeEditPoints(${task.id}, -1)">
+                        −
+                    </button>
+
                     <input id="edit-task-points-${task.id}" type="number" min="0" value="${Number(task.points || 0)}">
-                    <button type="button" onclick="changeEditPoints(${task.id}, 1)">+</button>
+
+                    <button type="button" onclick="changeEditPoints(${task.id}, 1)">
+                        +
+                    </button>
+
                 </div>
+
             </div>
 
         </div>
@@ -850,10 +1186,19 @@ function taskEditForm(task) {
 
             <div>
                 <label>Одиниця часу</label>
+
                 <select id="edit-task-duration-unit-${task.id}">
-                    <option value="minutes" ${durationUnit === "minutes" ? "selected" : ""}>хвилин</option>
-                    <option value="hours" ${durationUnit === "hours" ? "selected" : ""}>годин</option>
+
+                    <option value="minutes" ${durationUnit === "minutes" ? "selected" : ""}>
+                        хвилин
+                    </option>
+
+                    <option value="hours" ${durationUnit === "hours" ? "selected" : ""}>
+                        годин
+                    </option>
+
                 </select>
+
             </div>
 
         </div>
@@ -862,20 +1207,32 @@ function taskEditForm(task) {
         <input id="edit-task-material-${task.id}" value="${escapeAttribute(task.material || "")}">
 
         <div class="actions">
-            <button class="primary" onclick="saveTask(${task.id})">Зберегти</button>
-            <button onclick="toggleEditTask(${task.id})">Скасувати</button>
+
+            <button class="primary" onclick="saveTask(${task.id})">
+                Зберегти
+            </button>
+
+            <button onclick="toggleEditTask(${task.id})">
+                Скасувати
+            </button>
+
         </div>
 
         <div id="edit-task-status-${task.id}" class="status"></div>
     `;
+
 }
 
 
 function renderEvents() {
+
     const container = document.getElementById("eventsList");
 
     if (!eventsCache.length) {
-        container.innerHTML = `<div class="empty">Подій поки немає.</div>`;
+
+        container.innerHTML =
+            `<div class="empty">Подій поки немає.</div>`;
+
         return;
     }
 
@@ -885,9 +1242,16 @@ function renderEvents() {
         const subject = event.subjects?.name || "";
 
         const start = formatDateTime(event.start_at);
+
         const end = event.end_at
             ? formatDateTime(event.end_at)
             : "";
+
+        const displayTitle =
+            event.title ||
+            subject ||
+            type ||
+            "Подія";
 
         return `
             <div class="item">
@@ -897,7 +1261,7 @@ function renderEvents() {
                     <div>
 
                         <div class="item-title">
-                            ${escapeHtml(event.title)}
+                            ${escapeHtml(displayTitle)}
                         </div>
 
                         <div class="item-meta">
@@ -924,8 +1288,15 @@ function renderEvents() {
                     </div>
 
                     <div class="actions" style="margin-top:0">
-                        <button onclick="toggleEditEvent(${event.id})">Редагувати</button>
-                        <button class="danger" onclick="deleteEvent(${event.id})">Видалити</button>
+
+                        <button onclick="toggleEditEvent(${event.id})">
+                            Редагувати
+                        </button>
+
+                        <button class="danger" onclick="deleteEvent(${event.id})">
+                            Видалити
+                        </button>
+
                     </div>
 
                 </div>
@@ -955,7 +1326,9 @@ function renderEvents() {
 
             </div>
         `;
+
     }).join("");
+
 }
 
 
@@ -1011,7 +1384,12 @@ function eventEditForm(event) {
         </select>
 
         <label>Назва</label>
-        <input id="edit-event-title-${event.id}" value="${escapeAttribute(event.title)}">
+
+        <input
+            id="edit-event-title-${event.id}"
+            value="${escapeAttribute(event.title || "")}"
+            placeholder="Необов'язково"
+        >
 
         <label>Опис</label>
         <textarea id="edit-event-description-${event.id}">${escapeHtml(event.description || "")}</textarea>
@@ -1020,6 +1398,7 @@ function eventEditForm(event) {
 
             <div>
                 <label>Початок</label>
+
                 <input
                     id="edit-event-start-${event.id}"
                     type="datetime-local"
@@ -1029,6 +1408,7 @@ function eventEditForm(event) {
 
             <div>
                 <label>Кінець</label>
+
                 <input
                     id="edit-event-end-${event.id}"
                     type="datetime-local"
@@ -1039,18 +1419,507 @@ function eventEditForm(event) {
         </div>
 
         <label>Додаткова інформація</label>
-        <input id="edit-event-info-${event.id}" value="${escapeAttribute(event.info || "")}">
+
+        <input
+            id="edit-event-info-${event.id}"
+            value="${escapeAttribute(event.info || "")}"
+        >
 
         <label>Посилання</label>
-        <input id="edit-event-link-${event.id}" type="url" value="${escapeAttribute(event.link || "")}">
+
+        <input
+            id="edit-event-link-${event.id}"
+            type="url"
+            value="${escapeAttribute(event.link || "")}"
+        >
 
         <div class="actions">
-            <button class="primary" onclick="saveEvent(${event.id})">Зберегти</button>
-            <button onclick="toggleEditEvent(${event.id})">Скасувати</button>
+
+            <button class="primary" onclick="saveEvent(${event.id})">
+                Зберегти
+            </button>
+
+            <button onclick="toggleEditEvent(${event.id})">
+                Скасувати
+            </button>
+
         </div>
 
         <div id="edit-event-status-${event.id}" class="status"></div>
     `;
+
+}
+
+
+function openScheduleEditor() {
+
+    document.getElementById("adminContent").classList.add("hidden");
+    document.getElementById("scheduleEditor").classList.add("open");
+
+    document.getElementById("scheduleButton").classList.add("hidden");
+    document.getElementById("backAdminButton").classList.remove("hidden");
+
+    document.getElementById("pageTitle").textContent = "Редагування розкладу";
+
+    renderScheduleEditor();
+
+}
+
+
+function closeScheduleEditor() {
+
+    document.getElementById("scheduleEditor").classList.remove("open");
+    document.getElementById("adminContent").classList.remove("hidden");
+
+    document.getElementById("scheduleButton").classList.remove("hidden");
+    document.getElementById("backAdminButton").classList.add("hidden");
+
+    document.getElementById("pageTitle").textContent = "Адмінка";
+
+}
+
+
+function selectScheduleDay(day) {
+
+    selectedScheduleDay = day;
+
+    document.querySelectorAll(".day-button").forEach(button => {
+        button.classList.remove("active");
+    });
+
+    document.getElementById(`day-${day}`).classList.add("active");
+
+    renderScheduleEditor();
+
+}
+
+
+function selectScheduleWeek(week) {
+
+    selectedScheduleWeek = week;
+
+    document.getElementById("weekUpperButton").classList.toggle(
+        "active",
+        week === "upper"
+    );
+
+    document.getElementById("weekLowerButton").classList.toggle(
+        "active",
+        week === "lower"
+    );
+
+    renderScheduleEditor();
+
+}
+
+
+function renderScheduleEditor() {
+
+    const container = document.getElementById("lessonsEditor");
+
+    if (!container) {
+        return;
+    }
+
+    const weekName =
+        selectedScheduleWeek === "upper"
+            ? "Верхній тиждень"
+            : "Нижній тиждень";
+
+    document.getElementById("scheduleDayTitle").textContent =
+        `${selectedScheduleDay} · ${weekName}`;
+
+    container.innerHTML = "";
+
+    for (let lessonNumber = 1; lessonNumber <= 4; lessonNumber++) {
+
+        const lesson = scheduleCache.find(item =>
+            item.day_of_week === selectedScheduleDay &&
+            item.week_type === selectedScheduleWeek &&
+            Number(item.lesson_number) === lessonNumber
+        );
+
+        container.insertAdjacentHTML(
+            "beforeend",
+            scheduleLessonForm(lessonNumber, lesson)
+        );
+
+    }
+
+    const status = document.getElementById("scheduleEditorStatus");
+
+    if (status && scheduleSaveMessage) {
+        status.textContent = scheduleSaveMessage;
+        status.className = `status ${scheduleSaveMessageType}`;
+    }
+
+}
+
+
+function scheduleLessonForm(lessonNumber, lesson) {
+
+    const subjectOptions = subjectsCache.map(subject => `
+        <option
+            value="${subject.id}"
+            ${lesson && String(lesson.subject_id) === String(subject.id) ? "selected" : ""}
+        >
+            ${escapeHtml(subject.name)}
+        </option>
+    `).join("");
+
+    const links = getScheduleLinks(lesson?.links);
+
+    const linksText = links
+        .map(link =>
+            link.title
+                ? `${link.title}/${link.url || ""}`
+                : `${link.url || ""}`
+        )
+        .join("\n");
+
+    const time = lessonTimes[lessonNumber];
+
+    return `
+        <div class="lesson-card">
+
+            <div class="lesson-header">
+
+                <div class="lesson-number">
+                    ${lessonNumber} пара
+                </div>
+
+                <div class="lesson-time">
+                    ${time[0]}–${time[1]}
+                </div>
+
+            </div>
+
+            <label>Предмет</label>
+
+            <select id="schedule-subject-${lessonNumber}">
+                <option value="">Пари немає</option>
+                ${subjectOptions}
+            </select>
+
+            <div class="row">
+
+                <div>
+
+                    <label>Викладач</label>
+
+                    <input
+                        id="schedule-teacher-${lessonNumber}"
+                        value="${escapeAttribute(lesson?.teacher || "")}"
+                        placeholder="Необов'язково"
+                    >
+
+                </div>
+
+                <div>
+
+                    <label>Аудиторія</label>
+
+                    <input
+                        id="schedule-room-${lessonNumber}"
+                        value="${escapeAttribute(lesson?.room || "")}"
+                        placeholder="Необов'язково"
+                    >
+
+                </div>
+
+            </div>
+
+            <label>Посилання</label>
+
+            <textarea
+                id="schedule-links-${lessonNumber}"
+                placeholder="Назва/https://... або https://..."
+            >${escapeHtml(linksText)}</textarea>
+
+            <div class="small">
+                Кожне посилання з нового рядка. Можна: Назва/URL або просто URL.
+            </div>
+
+            <div class="actions">
+
+                <button
+                    class="primary"
+                    onclick="saveScheduleLesson(${lessonNumber})"
+                >
+                    Зберегти
+                </button>
+
+                <button
+                    class="danger"
+                    onclick="deleteScheduleLesson(${lessonNumber})"
+                >
+                    Очистити
+                </button>
+
+            </div>
+
+        </div>
+    `;
+
+}
+
+
+function getScheduleLinks(value) {
+
+    if (!value) {
+        return [];
+    }
+
+    if (Array.isArray(value)) {
+        return value;
+    }
+
+    if (typeof value === "string") {
+
+        try {
+            return JSON.parse(value);
+        } catch {
+            return [];
+        }
+
+    }
+
+    return [];
+
+}
+
+
+function parseScheduleLinks(text) {
+
+    if (!text.trim()) {
+        return [];
+    }
+
+    return text
+        .split("\n")
+        .map(line => line.trim())
+        .filter(Boolean)
+        .map(line => {
+
+            if (
+                line.startsWith("http://") ||
+                line.startsWith("https://")
+            ) {
+                return {
+                    title: "",
+                    url: line
+                };
+            }
+
+            const separatorIndex = line.indexOf("/");
+
+            if (separatorIndex === -1) {
+                return null;
+            }
+
+            const title =
+                line.slice(0, separatorIndex).trim();
+
+            const url =
+                line.slice(separatorIndex + 1).trim();
+
+            if (!url) {
+                return null;
+            }
+
+            return {
+                title,
+                url
+            };
+
+        })
+        .filter(Boolean);
+
+}
+
+
+async function saveScheduleLesson(lessonNumber) {
+
+    const subjectId =
+        document.getElementById(`schedule-subject-${lessonNumber}`).value;
+
+    const teacher =
+        document.getElementById(`schedule-teacher-${lessonNumber}`).value.trim();
+
+    const room =
+        document.getElementById(`schedule-room-${lessonNumber}`).value.trim();
+
+    const linksText =
+        document.getElementById(`schedule-links-${lessonNumber}`).value;
+
+    const status =
+        document.getElementById("scheduleEditorStatus");
+
+    status.textContent = "";
+
+    scheduleSaveMessage = "";
+    scheduleSaveMessageType = "";
+
+    if (!subjectId) {
+
+        await deleteScheduleLesson(lessonNumber);
+
+        return;
+    }
+
+    const links = parseScheduleLinks(linksText);
+
+    const existing = scheduleCache.find(item =>
+        item.day_of_week === selectedScheduleDay &&
+        item.week_type === selectedScheduleWeek &&
+        Number(item.lesson_number) === lessonNumber
+    );
+
+    const payload = {
+        day_of_week: selectedScheduleDay,
+        week_type: selectedScheduleWeek,
+        lesson_number: lessonNumber,
+        subject_id: Number(subjectId),
+        teacher: teacher || null,
+        room: room || null,
+        links: links.length ? links : null
+    };
+
+    let result;
+
+    if (existing) {
+
+        result = await supabaseClient
+            .from("schedule")
+            .update(payload)
+            .eq("id", existing.id);
+
+    } else {
+
+        result = await supabaseClient
+            .from("schedule")
+            .insert(payload);
+
+    }
+
+    if (result.error) {
+
+        status.textContent = result.error.message;
+        status.className = "status error";
+
+        return;
+    }
+
+    scheduleSaveMessage = "Збережено";
+    scheduleSaveMessageType = "success";
+
+    await loadSchedule();
+
+}
+
+
+async function deleteScheduleLesson(lessonNumber) {
+
+    const existing = scheduleCache.find(item =>
+        item.day_of_week === selectedScheduleDay &&
+        item.week_type === selectedScheduleWeek &&
+        Number(item.lesson_number) === lessonNumber
+    );
+
+    if (!existing) {
+
+        renderScheduleEditor();
+
+        return;
+    }
+
+    const status =
+        document.getElementById("scheduleEditorStatus");
+
+    const { error } = await supabaseClient
+        .from("schedule")
+        .delete()
+        .eq("id", existing.id);
+
+    if (error) {
+
+        status.textContent = error.message;
+        status.className = "status error";
+
+        return;
+    }
+
+    status.textContent = `${lessonNumber} пару очищено.`;
+    status.className = "status success";
+
+    await loadSchedule();
+
+}
+
+
+async function saveScheduleSettings() {
+
+    const scheduleStart =
+        document.getElementById("scheduleStart").value;
+
+    const scheduleEnd =
+        document.getElementById("scheduleEnd").value;
+
+    const upperWeekStart =
+        document.getElementById("upperWeekStart").value;
+
+    const status =
+        document.getElementById("scheduleSettingsStatus");
+
+    status.textContent = "";
+
+    if (!scheduleStart || !scheduleEnd || !upperWeekStart) {
+
+        status.textContent =
+            "Заповни всі три дати.";
+
+        status.className =
+            "status error";
+
+        return;
+    }
+
+    if (scheduleEnd < scheduleStart) {
+
+        status.textContent =
+            "Кінець розкладу не може бути раніше його початку.";
+
+        status.className =
+            "status error";
+
+        return;
+    }
+
+    const { error } = await supabaseClient
+        .from("schedule_settings")
+        .upsert({
+            id: 1,
+            schedule_start: scheduleStart,
+            schedule_end: scheduleEnd,
+            upper_week_start: upperWeekStart
+        });
+
+    if (error) {
+
+        status.textContent = error.message;
+        status.className = "status error";
+
+        return;
+    }
+
+    status.textContent =
+        "Налаштування збережено.";
+
+    status.className =
+        "status success";
+
+    await loadSchedule();
+
 }
 
 
@@ -1060,30 +1929,47 @@ function toggleMenu(id) {
 
 
 function changePoints(amount) {
-    const input = document.getElementById("taskPoints");
-    const value = Math.max(0, Number(input.value || 0) + amount);
+
+    const input =
+        document.getElementById("taskPoints");
+
+    const value =
+        Math.max(0, Number(input.value || 0) + amount);
+
     input.value = value;
+
 }
 
 
 function changeEditPoints(id, amount) {
-    const input = document.getElementById(`edit-task-points-${id}`);
-    const value = Math.max(0, Number(input.value || 0) + amount);
+
+    const input =
+        document.getElementById(`edit-task-points-${id}`);
+
+    const value =
+        Math.max(0, Number(input.value || 0) + amount);
+
     input.value = value;
+
 }
 
 
 function selectEventType(button) {
-    document.querySelectorAll("#eventTypeButtons .type-button").forEach(btn => {
-        btn.classList.remove("active");
-    });
+
+    document
+        .querySelectorAll("#eventTypeButtons .type-button")
+        .forEach(btn => btn.classList.remove("active"));
 
     button.classList.add("active");
-    selectedEventType = button.dataset.type;
+
+    selectedEventType =
+        button.dataset.type;
+
 }
 
 
 function selectEditEventType(button, id) {
+
     document
         .querySelectorAll(`[data-edit-event-type="${id}"]`)
         .forEach(btn => btn.classList.remove("active"));
@@ -1092,10 +1978,12 @@ function selectEditEventType(button, id) {
 
     document.getElementById(`edit-event-type-${id}`).value =
         button.dataset.type;
+
 }
 
 
 function durationToMinutes(value, unit) {
+
     const number = Number(value);
 
     if (!number || number <= 0) {
@@ -1107,307 +1995,523 @@ function durationToMinutes(value, unit) {
     }
 
     return Math.round(number);
+
 }
 
 
 async function addTask() {
 
-    const subjectId = document.getElementById("taskSubject").value;
-    const title = document.getElementById("taskTitle").value.trim();
-    const description = document.getElementById("taskDescription").value.trim();
-    const deadline = document.getElementById("taskDeadline").value || null;
-    const points = Math.max(0, Number(document.getElementById("taskPoints").value || 0));
-    const durationValue = document.getElementById("taskDuration").value;
-    const durationUnit = document.getElementById("taskDurationUnit").value;
-    const material = document.getElementById("taskMaterial").value.trim();
+    const subjectId =
+        document.getElementById("taskSubject").value;
 
-    const status = document.getElementById("taskStatus");
+    const title =
+        document.getElementById("taskTitle").value.trim();
+
+    const description =
+        document.getElementById("taskDescription").value.trim();
+
+    const deadline =
+        document.getElementById("taskDeadline").value || null;
+
+    const points =
+        Math.max(
+            0,
+            Number(document.getElementById("taskPoints").value || 0)
+        );
+
+    const durationValue =
+        document.getElementById("taskDuration").value;
+
+    const durationUnit =
+        document.getElementById("taskDurationUnit").value;
+
+    const material =
+        document.getElementById("taskMaterial").value.trim();
+
+    const status =
+        document.getElementById("taskStatus");
 
     status.textContent = "";
 
     if (!title) {
-        status.textContent = "Введи назву завдання.";
-        status.className = "status error";
+
+        status.textContent =
+            "Введи назву завдання.";
+
+        status.className =
+            "status error";
+
         return;
     }
 
-    const durationMinutes = durationToMinutes(
-        durationValue,
-        durationUnit
-    );
+    const durationMinutes =
+        durationToMinutes(
+            durationValue,
+            durationUnit
+        );
 
     const { error } = await supabaseClient
         .from("tasks")
         .insert({
-            subject_id: subjectId ? Number(subjectId) : null,
+            subject_id: subjectId
+                ? Number(subjectId)
+                : null,
+
             title,
-            description: description || null,
+
+            description:
+                description || null,
+
             deadline,
+
             points,
-            duration_minutes: durationMinutes,
-            material: material || null
+
+            duration_minutes:
+                durationMinutes,
+
+            material:
+                material || null
         });
 
     if (error) {
-        status.textContent = error.message;
-        status.className = "status error";
+
+        status.textContent =
+            error.message;
+
+        status.className =
+            "status error";
+
         return;
     }
 
-    status.textContent = "Завдання додано.";
-    status.className = "status success";
+    status.textContent =
+        "Завдання додано.";
+
+    status.className =
+        "status success";
 
     clearTaskForm();
+
     await loadTasks();
+
 }
 
 
 async function addEvent() {
 
-    const subjectId = document.getElementById("eventSubject").value;
-    const title = document.getElementById("eventTitle").value.trim();
-    const description = document.getElementById("eventDescription").value.trim();
-    const start = document.getElementById("eventStart").value;
-    const end = document.getElementById("eventEnd").value;
-    const info = document.getElementById("eventInfo").value.trim();
-    const link = document.getElementById("eventLink").value.trim();
+    const subjectId =
+        document.getElementById("eventSubject").value;
 
-    const status = document.getElementById("eventStatus");
+    const title =
+        document.getElementById("eventTitle").value.trim();
+
+    const description =
+        document.getElementById("eventDescription").value.trim();
+
+    const start =
+        document.getElementById("eventStart").value;
+
+    const end =
+        document.getElementById("eventEnd").value;
+
+    const info =
+        document.getElementById("eventInfo").value.trim();
+
+    const link =
+        document.getElementById("eventLink").value.trim();
+
+    const status =
+        document.getElementById("eventStatus");
 
     status.textContent = "";
 
-    if (!title) {
-        status.textContent = "Введи назву події.";
-        status.className = "status error";
-        return;
-    }
-
     if (!start) {
-        status.textContent = "Вкажи день події.";
-        status.className = "status error";
+
+        status.textContent =
+            "Вкажи день події.";
+
+        status.className =
+            "status error";
+
         return;
     }
 
     if (end && new Date(end) < new Date(start)) {
-        status.textContent = "Кінець події не може бути раніше початку.";
-        status.className = "status error";
+
+        status.textContent =
+            "Кінець події не може бути раніше початку.";
+
+        status.className =
+            "status error";
+
         return;
     }
 
     const { error } = await supabaseClient
         .from("events")
         .insert({
-            title,
-            description: description || null,
-            start_at: new Date(start).toISOString(),
-            end_at: end ? new Date(end).toISOString() : null,
-            link: link || null,
-            info: info || null,
-            event_type: selectedEventType || null,
-            subject_id: subjectId ? Number(subjectId) : null
+            title: title || null,
+
+            description:
+                description || null,
+
+            start_at:
+                new Date(start).toISOString(),
+
+            end_at:
+                end
+                    ? new Date(end).toISOString()
+                    : null,
+
+            link:
+                link || null,
+
+            info:
+                info || null,
+
+            event_type:
+                selectedEventType || null,
+
+            subject_id:
+                subjectId
+                    ? Number(subjectId)
+                    : null
         });
 
     if (error) {
-        status.textContent = error.message;
-        status.className = "status error";
+
+        status.textContent =
+            error.message;
+
+        status.className =
+            "status error";
+
         return;
     }
 
-    status.textContent = "Подію додано.";
-    status.className = "status success";
+    status.textContent =
+        "Подію додано.";
+
+    status.className =
+        "status success";
 
     clearEventForm();
+
     await loadEvents();
+
 }
 
 
 async function saveTask(id) {
 
-    const subjectId = document.getElementById(`edit-task-subject-${id}`).value;
-    const title = document.getElementById(`edit-task-title-${id}`).value.trim();
-    const description = document.getElementById(`edit-task-description-${id}`).value.trim();
-    const deadline = document.getElementById(`edit-task-deadline-${id}`).value || null;
-    const points = Math.max(
-        0,
-        Number(document.getElementById(`edit-task-points-${id}`).value || 0)
-    );
+    const subjectId =
+        document.getElementById(`edit-task-subject-${id}`).value;
+
+    const title =
+        document.getElementById(`edit-task-title-${id}`).value.trim();
+
+    const description =
+        document.getElementById(`edit-task-description-${id}`).value.trim();
+
+    const deadline =
+        document.getElementById(`edit-task-deadline-${id}`).value || null;
+
+    const points =
+        Math.max(
+            0,
+            Number(
+                document.getElementById(
+                    `edit-task-points-${id}`
+                ).value || 0
+            )
+        );
 
     const durationValue =
-        document.getElementById(`edit-task-duration-${id}`).value;
+        document.getElementById(
+            `edit-task-duration-${id}`
+        ).value;
 
     const durationUnit =
-        document.getElementById(`edit-task-duration-unit-${id}`).value;
+        document.getElementById(
+            `edit-task-duration-unit-${id}`
+        ).value;
 
     const material =
-        document.getElementById(`edit-task-material-${id}`).value.trim();
+        document.getElementById(
+            `edit-task-material-${id}`
+        ).value.trim();
 
     const status =
-        document.getElementById(`edit-task-status-${id}`);
+        document.getElementById(
+            `edit-task-status-${id}`
+        );
 
     if (!title) {
-        status.textContent = "Назва не може бути порожньою.";
-        status.className = "status error";
+
+        status.textContent =
+            "Назва не може бути порожньою.";
+
+        status.className =
+            "status error";
+
         return;
     }
 
-    const durationMinutes = durationToMinutes(
-        durationValue,
-        durationUnit
-    );
+    const durationMinutes =
+        durationToMinutes(
+            durationValue,
+            durationUnit
+        );
 
     const { error } = await supabaseClient
         .from("tasks")
         .update({
-            subject_id: subjectId ? Number(subjectId) : null,
+
+            subject_id:
+                subjectId
+                    ? Number(subjectId)
+                    : null,
+
             title,
-            description: description || null,
+
+            description:
+                description || null,
+
             deadline,
+
             points,
-            duration_minutes: durationMinutes,
-            material: material || null
+
+            duration_minutes:
+                durationMinutes,
+
+            material:
+                material || null
+
         })
         .eq("id", id);
 
     if (error) {
-        status.textContent = error.message;
-        status.className = "status error";
+
+        status.textContent =
+            error.message;
+
+        status.className =
+            "status error";
+
         return;
     }
 
     await loadTasks();
+
 }
 
 
 async function saveEvent(id) {
 
     const type =
-        document.getElementById(`edit-event-type-${id}`).value;
+        document.getElementById(
+            `edit-event-type-${id}`
+        ).value;
 
     const subjectId =
-        document.getElementById(`edit-event-subject-${id}`).value;
+        document.getElementById(
+            `edit-event-subject-${id}`
+        ).value;
 
     const title =
-        document.getElementById(`edit-event-title-${id}`).value.trim();
+        document.getElementById(
+            `edit-event-title-${id}`
+        ).value.trim();
 
     const description =
-        document.getElementById(`edit-event-description-${id}`).value.trim();
+        document.getElementById(
+            `edit-event-description-${id}`
+        ).value.trim();
 
     const start =
-        document.getElementById(`edit-event-start-${id}`).value;
+        document.getElementById(
+            `edit-event-start-${id}`
+        ).value;
 
     const end =
-        document.getElementById(`edit-event-end-${id}`).value;
+        document.getElementById(
+            `edit-event-end-${id}`
+        ).value;
 
     const info =
-        document.getElementById(`edit-event-info-${id}`).value.trim();
+        document.getElementById(
+            `edit-event-info-${id}`
+        ).value.trim();
 
     const link =
-        document.getElementById(`edit-event-link-${id}`).value.trim();
+        document.getElementById(
+            `edit-event-link-${id}`
+        ).value.trim();
 
     const status =
-        document.getElementById(`edit-event-status-${id}`);
-
-    if (!title) {
-        status.textContent = "Назва не може бути порожньою.";
-        status.className = "status error";
-        return;
-    }
+        document.getElementById(
+            `edit-event-status-${id}`
+        );
 
     if (!start) {
-        status.textContent = "Вкажи день події.";
-        status.className = "status error";
+
+        status.textContent =
+            "Вкажи день події.";
+
+        status.className =
+            "status error";
+
         return;
     }
 
     if (end && new Date(end) < new Date(start)) {
-        status.textContent = "Кінець не може бути раніше початку.";
-        status.className = "status error";
+
+        status.textContent =
+            "Кінець не може бути раніше початку.";
+
+        status.className =
+            "status error";
+
         return;
     }
 
     const { error } = await supabaseClient
         .from("events")
         .update({
-            title,
-            description: description || null,
-            start_at: new Date(start).toISOString(),
-            end_at: end ? new Date(end).toISOString() : null,
-            link: link || null,
-            info: info || null,
-            event_type: type || null,
-            subject_id: subjectId ? Number(subjectId) : null
+
+            title:
+                title || null,
+
+            description:
+                description || null,
+
+            start_at:
+                new Date(start).toISOString(),
+
+            end_at:
+                end
+                    ? new Date(end).toISOString()
+                    : null,
+
+            link:
+                link || null,
+
+            info:
+                info || null,
+
+            event_type:
+                type || null,
+
+            subject_id:
+                subjectId
+                    ? Number(subjectId)
+                    : null
+
         })
         .eq("id", id);
 
     if (error) {
-        status.textContent = error.message;
-        status.className = "status error";
+
+        status.textContent =
+            error.message;
+
+        status.className =
+            "status error";
+
         return;
     }
 
     await loadEvents();
+
 }
 
 
 async function deleteTask(id) {
 
-    const task = tasksCache.find(item => item.id === id);
+    const task =
+        tasksCache.find(item => item.id === id);
 
     if (!task) {
         return;
     }
 
-    if (!confirm(`Видалити завдання «${task.title}»?`)) {
+    if (!confirm(
+        `Видалити завдання «${task.title}»?`
+    )) {
         return;
     }
 
-    const { error } = await supabaseClient
-        .from("tasks")
-        .delete()
-        .eq("id", id);
+    const { error } =
+        await supabaseClient
+            .from("tasks")
+            .delete()
+            .eq("id", id);
 
     if (error) {
+
         alert(error.message);
+
         return;
     }
 
     await loadTasks();
+
 }
 
 
 async function deleteEvent(id) {
 
-    const event = eventsCache.find(item => item.id === id);
+    const event =
+        eventsCache.find(item => item.id === id);
 
     if (!event) {
         return;
     }
 
-    if (!confirm(`Видалити подію «${event.title}»?`)) {
+    const title =
+        event.title ||
+        event.subjects?.name ||
+        "подію";
+
+    if (!confirm(
+        `Видалити подію «${title}»?`
+    )) {
         return;
     }
 
-    const { error } = await supabaseClient
-        .from("events")
-        .delete()
-        .eq("id", id);
+    const { error } =
+        await supabaseClient
+            .from("events")
+            .delete()
+            .eq("id", id);
 
     if (error) {
+
         alert(error.message);
+
         return;
     }
 
     await loadEvents();
+
 }
 
 
 function toggleEditTask(id) {
-    document.getElementById(`edit-task-${id}`).classList.toggle("open");
+
+    document
+        .getElementById(`edit-task-${id}`)
+        .classList.toggle("open");
+
 }
 
 
 function toggleEditEvent(id) {
-    document.getElementById(`edit-event-${id}`).classList.toggle("open");
+
+    document
+        .getElementById(`edit-event-${id}`)
+        .classList.toggle("open");
+
 }
 
 
@@ -1421,6 +2525,7 @@ function clearTaskForm() {
     document.getElementById("taskDuration").value = "";
     document.getElementById("taskDurationUnit").value = "minutes";
     document.getElementById("taskMaterial").value = "";
+
 }
 
 
@@ -1436,13 +2541,16 @@ function clearEventForm() {
 
     selectedEventType = "";
 
-    document.querySelectorAll("#eventTypeButtons .type-button").forEach(btn => {
-        btn.classList.remove("active");
-    });
+    document
+        .querySelectorAll("#eventTypeButtons .type-button")
+        .forEach(btn => btn.classList.remove("active"));
 
     document
-        .querySelector('#eventTypeButtons .type-button[data-type=""]')
+        .querySelector(
+            '#eventTypeButtons .type-button[data-type=""]'
+        )
         .classList.add("active");
+
 }
 
 
@@ -1452,13 +2560,15 @@ function formatDate(date) {
         return "";
     }
 
-    const parts = date.split("-");
+    const parts =
+        date.split("-");
 
     if (parts.length !== 3) {
         return date;
     }
 
     return `${parts[2]}.${parts[1]}.${parts[0]}`;
+
 }
 
 
@@ -1468,12 +2578,17 @@ function formatDateTime(value) {
         return "";
     }
 
-    const date = new Date(value);
+    const date =
+        new Date(value);
 
-    return date.toLocaleString("uk-UA", {
-        dateStyle: "short",
-        timeStyle: "short"
-    });
+    return date.toLocaleString(
+        "uk-UA",
+        {
+            dateStyle: "short",
+            timeStyle: "short"
+        }
+    );
+
 }
 
 
@@ -1483,11 +2598,15 @@ function toDateTimeLocal(value) {
         return "";
     }
 
-    const date = new Date(value);
+    const date =
+        new Date(value);
 
-    const pad = number => String(number).padStart(2, "0");
+    const pad =
+        number =>
+            String(number).padStart(2, "0");
 
     return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+
 }
 
 
@@ -1499,6 +2618,7 @@ function escapeHtml(value) {
         .replaceAll(">", "&gt;")
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#039;");
+
 }
 
 

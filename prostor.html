@@ -609,7 +609,12 @@ async function loadTasks() {
 async function loadEvents() {
     const { data, error } = await supabaseClient
         .from("events")
-        .select("*")
+        .select(`
+            *,
+            subjects (
+                name
+            )
+        `)
         .order("start_at", {
             ascending: true
         });
@@ -661,6 +666,52 @@ function getUpcomingEventDate(event) {
     }
 
     return date;
+}
+
+function parseMaterials(value) {
+    if (!value) return [];
+
+    return String(value)
+        .split(/\r?\n/)
+        .map(item => item.trim())
+        .filter(Boolean)
+        .map(item => {
+            const slashIndex = item.indexOf("/");
+
+            if (slashIndex > 0) {
+                const name = item.slice(0, slashIndex).trim();
+                const url = item.slice(slashIndex + 1).trim();
+
+                if (name && url) {
+                    return {
+                        name,
+                        url
+                    };
+                }
+            }
+
+            return {
+                name: "Матеріали",
+                url: item
+            };
+        });
+}
+
+function renderMaterialLinks(material) {
+    const links = parseMaterials(material);
+
+    if (!links.length) {
+        return "";
+    }
+
+    return links.map(link => `
+        <a class="upcoming-link"
+           href="${escapeHtml(link.url)}"
+           target="_blank"
+           rel="noopener noreferrer">
+            ${escapeHtml(link.name)}
+        </a>
+    `).join("");
 }
 
 function renderTasks() {
@@ -727,6 +778,7 @@ function renderTasks() {
         if (item.type === "event") {
             const event = item.data;
             const type = getEventType(event);
+            const subject = event.subjects?.name || "";
 
             let time = "";
 
@@ -755,6 +807,7 @@ function renderTasks() {
                 <div class="upcoming-item event-upcoming">
                     <div class="upcoming-label event-upcoming">
                         * ${escapeHtml(type)}
+                        ${subject ? ` · ${escapeHtml(subject)}` : ""}
                     </div>
 
                     <div class="upcoming-title">
@@ -782,14 +835,10 @@ function renderTasks() {
                     }
 
                     ${
-                        event.location || event.link
+                        event.location
                         ? `
                             <div class="upcoming-extra">
-                                ${
-                                    event.location
-                                    ? `<span>📍 ${escapeHtml(event.location)}</span>`
-                                    : ""
-                                }
+                                <span>📍 ${escapeHtml(event.location)}</span>
                             </div>
                         `
                         : ""
@@ -813,7 +862,7 @@ function renderTasks() {
 
         const task = item.data;
         const subject =
-            task.subjects?.name || "Предмет не вказано";
+            task.subjects?.name || "";
 
         let info = "";
 
@@ -841,11 +890,11 @@ function renderTasks() {
         return `
             <div class="upcoming-item">
                 <div class="upcoming-label">
-                    ● ${escapeHtml(subject)}
+                    ${subject ? `● ${escapeHtml(subject)}` : "● Завдання"}
                 </div>
 
                 <div class="upcoming-title">
-                    ${escapeHtml(task.title)}
+                    ${escapeHtml(task.title || "Завдання")}
                 </div>
 
                 ${
@@ -880,14 +929,7 @@ function renderTasks() {
 
                 ${
                     task.material
-                    ? `
-                        <a class="upcoming-link"
-                           href="${escapeHtml(task.material)}"
-                           target="_blank"
-                           rel="noopener noreferrer">
-                            Матеріали
-                        </a>
-                    `
+                    ? renderMaterialLinks(task.material)
                     : ""
                 }
             </div>
@@ -908,8 +950,10 @@ function getEventDate(event) {
 }
 
 function getEventType(event) {
-    if (event.type) {
-        return event.type;
+    const savedType = String(event.event_type || "").trim();
+
+    if (savedType) {
+        return savedType;
     }
 
     const title = String(event.title || "").toLowerCase();
@@ -1044,7 +1088,7 @@ function renderSelectedDay() {
 
     items.tasks.forEach(task => {
         const subject =
-            task.subjects?.name || "Предмет не вказано";
+            task.subjects?.name || "";
 
         let info = "";
 
@@ -1071,21 +1115,30 @@ function renderSelectedDay() {
         }
 
         if (task.material) {
-            info += `
+            const materialLinks = parseMaterials(task.material);
+
+            info += materialLinks.map(link => `
                 <div class="item-info">
-                    Матеріал: ${escapeHtml(task.material)}
+                    <a
+                        class="material"
+                        href="${escapeHtml(link.url)}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        ${escapeHtml(link.name)}
+                    </a>
                 </div>
-            `;
+            `).join("");
         }
 
         html += `
             <div class="calendar-item task-item">
                 <div class="item-label">
-                    ● ${escapeHtml(subject)}
+                    ${subject ? `● ${escapeHtml(subject)}` : "● Завдання"}
                 </div>
 
                 <div class="item-title">
-                    ${escapeHtml(task.title)}
+                    ${escapeHtml(task.title || "Завдання")}
                 </div>
 
                 ${
@@ -1098,10 +1151,16 @@ function renderSelectedDay() {
                     : ""
                 }
 
-                <div class="item-info">
-                    Дедлайн:
-                    ${escapeHtml(formatDateOnly(task.deadline))}
-                </div>
+                ${
+                    task.deadline
+                    ? `
+                        <div class="item-info">
+                            Дедлайн:
+                            ${escapeHtml(formatDateOnly(task.deadline))}
+                        </div>
+                    `
+                    : ""
+                }
 
                 ${info}
             </div>
@@ -1110,6 +1169,7 @@ function renderSelectedDay() {
 
     items.events.forEach(event => {
         const type = getEventType(event);
+        const subject = event.subjects?.name || "";
 
         let time = "";
 
@@ -1129,6 +1189,7 @@ function renderSelectedDay() {
             <div class="calendar-item event-item">
                 <div class="item-label event-type">
                     * ${escapeHtml(type)}
+                    ${subject ? ` · ${escapeHtml(subject)}` : ""}
                 </div>
 
                 <div class="item-title">
