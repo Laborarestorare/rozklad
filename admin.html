@@ -517,7 +517,7 @@ button:hover {
                 </div>
 
                 <label for="taskMaterial">Матеріал</label>
-                <input id="taskMaterial" type="text" placeholder="Посилання або назва матеріалу">
+                <input id="taskMaterial" type="text" placeholder="Назва/https://... або https://...">
 
                 <div class="actions">
                     <button class="primary" onclick="addTask()">Додати</button>
@@ -583,7 +583,7 @@ button:hover {
                 <input id="eventInfo" type="text" placeholder="Наприклад: аудиторія 204">
 
                 <label for="eventLink">Посилання</label>
-                <input id="eventLink" type="url" placeholder="https://...">
+                <input id="eventLink" type="text" placeholder="Назва/https://... або https://...">
 
                 <div class="actions">
                     <button class="primary" onclick="addEvent()">Додати</button>
@@ -1013,6 +1013,57 @@ async function loadSchedule() {
 }
 
 
+function parseAdminLinks(value) {
+
+    if (!value) return [];
+
+    return String(value)
+        .split(/\r?\n/)
+        .map(item => item.trim())
+        .filter(Boolean)
+        .map(item => {
+
+            if (item.startsWith("http://") || item.startsWith("https://")) {
+                return {
+                    name: "Матеріал",
+                    url: item
+                };
+            }
+
+            const separatorIndex = item.indexOf("/");
+
+            if (separatorIndex > 0) {
+                const name = item.slice(0, separatorIndex).trim();
+                const url = item.slice(separatorIndex + 1).trim();
+
+                if (name && (url.startsWith("http://") || url.startsWith("https://"))) {
+                    return {
+                        name,
+                        url
+                    };
+                }
+            }
+
+            return {
+                name: "Матеріал",
+                url: item
+            };
+        });
+}
+
+function renderAdminLinks(value, defaultName) {
+
+    const links = parseAdminLinks(value);
+
+    return links.map(link => `
+        <div class="item-link">
+            <a href="${escapeAttribute(link.url)}" target="_blank" rel="noopener noreferrer">
+                ${escapeHtml(link.name || defaultName)}
+            </a>
+        </div>
+    `).join("");
+}
+
 function renderTasks() {
 
     const container = document.getElementById("tasksList");
@@ -1088,11 +1139,7 @@ function renderTasks() {
                 }
 
                 ${task.material
-                    ? `<div class="item-link">
-                        <a href="${escapeAttribute(task.material)}" target="_blank" rel="noopener noreferrer">
-                            Матеріал
-                        </a>
-                    </div>`
+                    ? renderAdminLinks(task.material, "Матеріал")
                     : ""
                 }
 
@@ -1312,11 +1359,7 @@ function renderEvents() {
                 }
 
                 ${event.link
-                    ? `<div class="item-link">
-                        <a href="${escapeAttribute(event.link)}" target="_blank" rel="noopener noreferrer">
-                            Відкрити посилання
-                        </a>
-                    </div>`
+                    ? renderAdminLinks(event.link, "Відкрити посилання")
                     : ""
                 }
 
@@ -1429,8 +1472,9 @@ function eventEditForm(event) {
 
         <input
             id="edit-event-link-${event.id}"
-            type="url"
+            type="text"
             value="${escapeAttribute(event.link || "")}"
+            placeholder="Назва/https://... або https://..."
         >
 
         <div class="actions">

@@ -676,13 +676,21 @@ function parseMaterials(value) {
         .map(item => item.trim())
         .filter(Boolean)
         .map(item => {
+
+            if (item.startsWith("http://") || item.startsWith("https://")) {
+                return {
+                    name: "Матеріал",
+                    url: item
+                };
+            }
+
             const slashIndex = item.indexOf("/");
 
             if (slashIndex > 0) {
                 const name = item.slice(0, slashIndex).trim();
                 const url = item.slice(slashIndex + 1).trim();
 
-                if (name && url) {
+                if (name && (url.startsWith("http://") || url.startsWith("https://"))) {
                     return {
                         name,
                         url
@@ -691,7 +699,7 @@ function parseMaterials(value) {
             }
 
             return {
-                name: "Матеріали",
+                name: "Матеріал",
                 url: item
             };
         });
@@ -835,10 +843,10 @@ function renderTasks() {
                     }
 
                     ${
-                        event.location
+                        event.info
                         ? `
                             <div class="upcoming-extra">
-                                <span>📍 ${escapeHtml(event.location)}</span>
+                                <span>ℹ ${escapeHtml(event.info)}</span>
                             </div>
                         `
                         : ""
@@ -846,14 +854,7 @@ function renderTasks() {
 
                     ${
                         event.link
-                        ? `
-                            <a class="upcoming-link"
-                               href="${escapeHtml(event.link)}"
-                               target="_blank"
-                               rel="noopener noreferrer">
-                                Відкрити
-                            </a>
-                        `
+                        ? renderMaterialLinks(event.link)
                         : ""
                     }
                 </div>
@@ -1217,10 +1218,10 @@ function renderSelectedDay() {
                 }
 
                 ${
-                    event.location
+                    event.info
                     ? `
                         <div class="item-info">
-                            Місце: ${escapeHtml(event.location)}
+                            ℹ ${escapeHtml(event.info)}
                         </div>
                     `
                     : ""
@@ -1228,18 +1229,7 @@ function renderSelectedDay() {
 
                 ${
                     event.link
-                    ? `
-                        <div>
-                            <a
-                                class="material"
-                                href="${escapeHtml(event.link)}"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                Відкрити посилання
-                            </a>
-                        </div>
-                    `
+                    ? renderMaterialLinks(event.link)
                     : ""
                 }
             </div>
