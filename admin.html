@@ -474,7 +474,7 @@ button:hover {
                 </select>
 
                 <label for="taskTitle">Назва</label>
-                <input id="taskTitle" type="text" placeholder="Наприклад: Вивчити §5">
+                <input id="taskTitle" type="text" placeholder="Необов'язково">
 
                 <label for="taskDescription">Опис</label>
                 <textarea id="taskDescription" placeholder="Додатковий опис"></textarea>
@@ -517,7 +517,7 @@ button:hover {
                 </div>
 
                 <label for="taskMaterial">Матеріал</label>
-                <input id="taskMaterial" type="text" placeholder="Назва/https://... або https://...">
+                <textarea id="taskMaterial" rows="3" placeholder="Назва/https://... або https://... · кожне посилання з нового рядка"></textarea>
 
                 <div class="actions">
                     <button class="primary" onclick="addTask()">Додати</button>
@@ -583,7 +583,7 @@ button:hover {
                 <input id="eventInfo" type="text" placeholder="Наприклад: аудиторія 204">
 
                 <label for="eventLink">Посилання</label>
-                <input id="eventLink" type="text" placeholder="Назва/https://... або https://...">
+                <textarea id="eventLink" rows="3" placeholder="Назва/https://... або https://... · кожне посилання з нового рядка"></textarea>
 
                 <div class="actions">
                     <button class="primary" onclick="addEvent()">Додати</button>
@@ -1104,9 +1104,12 @@ function renderTasks() {
 
                     <div>
 
-                        <div class="item-title">
-                            ${escapeHtml(task.title)}
-                        </div>
+                        ${task.title
+                            ? `<div class="item-title">
+                                ${escapeHtml(task.title)}
+                            </div>`
+                            : ""
+                        }
 
                         <div class="item-meta">
                             ${escapeHtml(subject)}
@@ -1191,7 +1194,7 @@ function taskEditForm(task) {
         </select>
 
         <label>Назва</label>
-        <input id="edit-task-title-${task.id}" value="${escapeAttribute(task.title)}">
+        <input id="edit-task-title-${task.id}" value="${escapeAttribute(task.title || "")}" placeholder="Необов'язково">
 
         <label>Опис</label>
         <textarea id="edit-task-description-${task.id}">${escapeHtml(task.description || "")}</textarea>
@@ -1251,7 +1254,7 @@ function taskEditForm(task) {
         </div>
 
         <label>Матеріал</label>
-        <input id="edit-task-material-${task.id}" value="${escapeAttribute(task.material || "")}">
+        <textarea id="edit-task-material-${task.id}" rows="3" placeholder="Назва/https://... або https://... · кожне посилання з нового рядка">${escapeHtml(task.material || "")}</textarea>
 
         <div class="actions">
 
@@ -1470,12 +1473,11 @@ function eventEditForm(event) {
 
         <label>Посилання</label>
 
-        <input
+        <textarea
             id="edit-event-link-${event.id}"
-            type="text"
-            value="${escapeAttribute(event.link || "")}"
-            placeholder="Назва/https://... або https://..."
-        >
+            rows="3"
+            placeholder="Назва/https://... або https://... · кожне посилання з нового рядка"
+        >${escapeHtml(event.link || "")}</textarea>
 
         <div class="actions">
 
@@ -2077,17 +2079,6 @@ async function addTask() {
 
     status.textContent = "";
 
-    if (!title) {
-
-        status.textContent =
-            "Введи назву завдання.";
-
-        status.className =
-            "status error";
-
-        return;
-    }
-
     const durationMinutes =
         durationToMinutes(
             durationValue,
@@ -2289,17 +2280,6 @@ async function saveTask(id) {
         document.getElementById(
             `edit-task-status-${id}`
         );
-
-    if (!title) {
-
-        status.textContent =
-            "Назва не може бути порожньою.";
-
-        status.className =
-            "status error";
-
-        return;
-    }
 
     const durationMinutes =
         durationToMinutes(
