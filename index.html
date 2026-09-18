@@ -449,18 +449,21 @@ function getWeekInfo(date) {
 
     if (day === 5) {
 
-        const lastFridayEnd =
-            getLastFridayLessonEnd(
+        const lastFridayLessonStart =
+            getLastFridayLessonStart(
                 baseWeekInfo
             );
 
-        if (lastFridayEnd !== null) {
+        if (lastFridayLessonStart !== null) {
 
             const currentMinutes =
                 date.getHours() * 60 +
                 date.getMinutes();
 
-            if (currentMinutes >= lastFridayEnd) {
+            if (
+                currentMinutes >=
+                lastFridayLessonStart
+            ) {
 
                 return {
                     number:
@@ -478,7 +481,7 @@ function getWeekInfo(date) {
     return baseWeekInfo;
 }
 
-function getLastFridayLessonEnd(weekInfo) {
+function getLastFridayLessonStart(weekInfo) {
 
     const lessons =
         scheduleData.filter(item =>
@@ -495,7 +498,10 @@ function getLastFridayLessonEnd(weekInfo) {
     const lessonNumbers =
         lessons
             .map(item => Number(item.lesson_number))
-            .filter(number => number >= 1 && number <= 4)
+            .filter(number =>
+                number >= 1 &&
+                number <= 4
+            )
             .sort((a, b) => a - b);
 
     if (!lessonNumbers.length) {
@@ -517,7 +523,7 @@ function getLastFridayLessonEnd(weekInfo) {
     }
 
     return timeToMinutes(
-        lastTime[1]
+        lastTime[0]
     );
 }
 
@@ -551,10 +557,42 @@ function getScheduleForDate(date) {
                     Number(b.lesson_number)
             );
 
+    const uniqueLessons = [];
+    const usedLessonNumbers = new Set();
+
+    lessons.forEach(lesson => {
+
+        const lessonNumber =
+            Number(lesson.lesson_number);
+
+        if (
+            lessonNumber < 1 ||
+            lessonNumber > 4
+        ) {
+            return;
+        }
+
+        if (
+            usedLessonNumbers.has(
+                lessonNumber
+            )
+        ) {
+            return;
+        }
+
+        usedLessonNumbers.add(
+            lessonNumber
+        );
+
+        uniqueLessons.push(
+            lesson
+        );
+    });
+
     return {
         dayName,
         weekInfo,
-        lessons
+        lessons: uniqueLessons
     };
 }
 
@@ -582,10 +620,42 @@ function getScheduleForSelectedDay() {
                     Number(b.lesson_number)
             );
 
+    const uniqueLessons = [];
+    const usedLessonNumbers = new Set();
+
+    lessons.forEach(lesson => {
+
+        const lessonNumber =
+            Number(lesson.lesson_number);
+
+        if (
+            lessonNumber < 1 ||
+            lessonNumber > 4
+        ) {
+            return;
+        }
+
+        if (
+            usedLessonNumbers.has(
+                lessonNumber
+            )
+        ) {
+            return;
+        }
+
+        usedLessonNumbers.add(
+            lessonNumber
+        );
+
+        uniqueLessons.push(
+            lesson
+        );
+    });
+
     return {
         dayName: selectedDay,
         weekInfo,
-        lessons
+        lessons: uniqueLessons
     };
 }
 
