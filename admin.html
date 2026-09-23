@@ -11,11 +11,16 @@
     box-sizing: border-box;
 }
 
+html {
+    background: #000;
+}
+
 body {
     margin: 0;
-    background: #121212;
-    color: #f2f2f2;
+    background: #000;
+    color: #f5f5f5;
     font-family: Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
 }
 
 .container {
@@ -25,13 +30,29 @@ body {
 
 h1, h2, h3 {
     margin-top: 0;
+    color: #f7f7f7;
+    letter-spacing: -0.02em;
+}
+
+h1 {
+    font-size: 30px;
+}
+
+h2 {
+    font-size: 22px;
+}
+
+h3 {
+    font-size: 17px;
 }
 
 .card {
-    background: #1d1d1d;
+    background: #050505;
+    border: 1px solid #3a3a3a;
     border-radius: 18px;
     padding: 22px;
     margin-bottom: 18px;
+    box-shadow: 0 10px 35px rgba(255, 255, 255, 0.025);
 }
 
 .login-card {
@@ -42,7 +63,7 @@ h1, h2, h3 {
 label {
     display: block;
     margin: 14px 0 7px;
-    color: #cfcfcf;
+    color: #c7c7c7;
 }
 
 input,
@@ -50,18 +71,32 @@ textarea,
 select {
     width: 100%;
     padding: 12px 13px;
-    border: 1px solid #383838;
-    border-radius: 10px;
-    background: #252525;
-    color: #fff;
+    border: 1px solid #3b3b3b;
+    border-radius: 11px;
+    background: #000;
+    color: #f5f5f5;
     font-size: 15px;
     outline: none;
+    transition: border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: #666;
+}
+
+input:hover,
+textarea:hover,
+select:hover {
+    border-color: #505050;
 }
 
 input:focus,
 textarea:focus,
 select:focus {
-    border-color: #666;
+    border-color: #8a8a8a;
+    background: #030303;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.045);
 }
 
 input[type="number"] {
@@ -80,38 +115,53 @@ textarea {
 }
 
 button {
-    border: 0;
-    border-radius: 10px;
+    border: 1px solid #3f3f3f;
+    border-radius: 11px;
     padding: 11px 15px;
-    background: #303030;
-    color: #fff;
+    background: #0a0a0a;
+    color: #e9e9e9;
     cursor: pointer;
     font-size: 14px;
+    transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.12s ease;
 }
 
 button:hover {
-    background: #3a3a3a;
+    background: #151515;
+    border-color: #686868;
+    color: #fff;
+}
+
+button:active {
+    transform: translateY(1px);
 }
 
 .primary {
-    background: #f2f2f2;
-    color: #111;
+    background: #ededed;
+    border-color: #ededed;
+    color: #090909;
 }
 
 .primary:hover {
-    background: #dcdcdc;
+    background: #fff;
+    border-color: #fff;
+    color: #000;
 }
 
 .danger {
-    background: #552525;
+    background: #0d0808;
+    border-color: #513434;
+    color: #e3bcbc;
 }
 
 .danger:hover {
-    background: #693030;
+    background: #1a0b0b;
+    border-color: #744848;
+    color: #f2cece;
 }
 
 .secondary {
-    background: #292929;
+    background: #090909;
+    border-color: #3f3f3f;
 }
 
 .topbar {
@@ -133,12 +183,14 @@ button:hover {
 }
 
 .schedule-button {
-    background: #252525;
-    color: #bbb;
+    background: #050505;
+    border-color: #414141;
+    color: #bcbcbc;
 }
 
 .schedule-button:hover {
-    background: #303030;
+    background: #111;
+    border-color: #6a6a6a;
     color: #fff;
 }
 
@@ -147,10 +199,16 @@ button:hover {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #252525;
+    background: #050505;
+    border-color: #414141;
     padding: 16px;
     font-size: 16px;
     text-align: left;
+}
+
+.menu-button:hover {
+    background: #0d0d0d;
+    border-color: #686868;
 }
 
 .form-content {
@@ -192,7 +250,7 @@ button:hover {
     height: 45px;
     padding: 0;
     font-size: 20px;
-    border-radius: 10px;
+    border-radius: 11px;
 }
 
 .points-control input {
@@ -207,13 +265,26 @@ button:hover {
 }
 
 .type-button {
-    background: #252525;
-    border: 1px solid #383838;
+    background: #050505;
+    border: 1px solid #3d3d3d;
+    color: #bdbdbd;
+}
+
+.type-button:hover {
+    background: #111;
+    border-color: #666;
+    color: #fff;
 }
 
 .type-button.active {
-    background: #e8e8e8;
+    background: #ededed;
+    border-color: #ededed;
     color: #111;
+}
+
+.type-button.active:hover {
+    background: #fff;
+    border-color: #fff;
 }
 
 .day-buttons,
@@ -232,21 +303,38 @@ button:hover {
 
 .day-button,
 .week-button {
-    background: #252525;
-    border: 1px solid #383838;
+    background: #050505;
+    border: 1px solid #3d3d3d;
+    color: #bdbdbd;
+}
+
+.day-button:hover,
+.week-button:hover {
+    background: #111;
+    border-color: #666;
+    color: #fff;
 }
 
 .day-button.active,
 .week-button.active {
-    background: #eeeeee;
+    background: #ededed;
+    border-color: #ededed;
     color: #111;
 }
 
+.day-button.active:hover,
+.week-button.active:hover {
+    background: #fff;
+    border-color: #fff;
+}
+
 .lesson-card {
-    background: #242424;
-    border-radius: 14px;
+    background: #030303;
+    border: 1px solid #343434;
+    border-radius: 15px;
     padding: 17px;
     margin-top: 12px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.025);
 }
 
 .lesson-header {
@@ -259,10 +347,11 @@ button:hover {
 .lesson-number {
     font-size: 18px;
     font-weight: bold;
+    color: #f1f1f1;
 }
 
 .lesson-time {
-    color: #999;
+    color: #888;
     font-size: 14px;
 }
 
@@ -271,10 +360,12 @@ button:hover {
 }
 
 .item {
-    background: #242424;
-    border-radius: 14px;
+    background: #030303;
+    border: 1px solid #343434;
+    border-radius: 15px;
     padding: 17px;
     margin-top: 12px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.025);
 }
 
 .item-header {
@@ -288,23 +379,24 @@ button:hover {
     font-size: 18px;
     font-weight: bold;
     margin-bottom: 5px;
+    color: #f1f1f1;
 }
 
 .item-meta {
-    color: #aaa;
+    color: #969696;
     font-size: 14px;
     line-height: 1.5;
 }
 
 .item-description {
     margin-top: 12px;
-    color: #ddd;
+    color: #d1d1d1;
     white-space: pre-wrap;
 }
 
 .item-info {
     margin-top: 10px;
-    color: #bbb;
+    color: #aaa;
 }
 
 .item-link {
@@ -312,15 +404,22 @@ button:hover {
 }
 
 .item-link a {
-    color: #9fc5ff;
+    color: #c6c6c6;
     text-decoration: none;
+    border-bottom: 1px solid #555;
+    transition: color 0.18s ease, border-color 0.18s ease;
+}
+
+.item-link a:hover {
+    color: #fff;
+    border-color: #aaa;
 }
 
 .edit-form {
     display: none;
     margin-top: 16px;
     padding-top: 16px;
-    border-top: 1px solid #383838;
+    border-top: 1px solid #333;
 }
 
 .edit-form.open {
@@ -329,25 +428,25 @@ button:hover {
 
 .small {
     font-size: 13px;
-    color: #999;
+    color: #777;
 }
 
 .empty {
-    color: #999;
+    color: #777;
     padding: 15px 0;
 }
 
 .status {
     margin-top: 12px;
-    color: #bbb;
+    color: #aaa;
 }
 
 .error {
-    color: #ff8e8e;
+    color: #e3a6a6;
 }
 
 .success {
-    color: #9ee69e;
+    color: #a9d4a9;
 }
 
 .hidden {
@@ -356,11 +455,12 @@ button:hover {
 
 .badge {
     display: inline-block;
-    background: #333;
+    background: #0b0b0b;
+    border: 1px solid #414141;
     border-radius: 7px;
     padding: 4px 8px;
     font-size: 12px;
-    color: #ddd;
+    color: #cfcfcf;
 }
 
 .schedule-editor {
@@ -418,6 +518,10 @@ button:hover {
 
     .container {
         margin-top: 15px;
+    }
+
+    .card {
+        padding: 18px;
     }
 }
 </style>
