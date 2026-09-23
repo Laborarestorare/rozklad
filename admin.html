@@ -567,13 +567,13 @@ button:hover {
 
                     <div>
                         <label for="eventStart">Початок</label>
-                        <input id="eventStart" type="datetime-local">
-                        <div class="small">Можна вказати лише день або день і час.</div>
+                        <input id="eventStart" type="date">
+                        <div class="small">Можна вказати лише день.</div>
                     </div>
 
                     <div>
                         <label for="eventEnd">Кінець</label>
-                        <input id="eventEnd" type="datetime-local">
+                        <input id="eventEnd" type="date">
                         <div class="small">Можна залишити порожнім.</div>
                     </div>
 
@@ -1291,10 +1291,10 @@ function renderEvents() {
         const type = event.event_type || "";
         const subject = event.subjects?.name || "";
 
-        const start = formatDateTime(event.start_at);
+        const start = formatDateOnly(event.start_at);
 
         const end = event.end_at
-            ? formatDateTime(event.end_at)
+            ? formatDateOnly(event.end_at)
             : "";
 
         const displayTitle =
@@ -1447,8 +1447,8 @@ function eventEditForm(event) {
 
                 <input
                     id="edit-event-start-${event.id}"
-                    type="datetime-local"
-                    value="${toDateTimeLocal(event.start_at)}"
+                    type="date"
+                    value="${toDateLocal(event.start_at)}"
                 >
             </div>
 
@@ -1457,8 +1457,8 @@ function eventEditForm(event) {
 
                 <input
                     id="edit-event-end-${event.id}"
-                    type="datetime-local"
-                    value="${toDateTimeLocal(event.end_at)}"
+                    type="date"
+                    value="${toDateLocal(event.end_at)}"
                 >
             </div>
 
@@ -2596,7 +2596,7 @@ function formatDate(date) {
 }
 
 
-function formatDateTime(value) {
+function formatDateOnly(value) {
 
     if (!value) {
         return "";
@@ -2605,18 +2605,14 @@ function formatDateTime(value) {
     const date =
         new Date(value);
 
-    return date.toLocaleString(
-        "uk-UA",
-        {
-            dateStyle: "short",
-            timeStyle: "short"
-        }
+    return date.toLocaleDateString(
+        "uk-UA"
     );
 
 }
 
 
-function toDateTimeLocal(value) {
+function toDateLocal(value) {
 
     if (!value) {
         return "";
@@ -2629,7 +2625,7 @@ function toDateTimeLocal(value) {
         number =>
             String(number).padStart(2, "0");
 
-    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 
 }
 
