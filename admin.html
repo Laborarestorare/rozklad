@@ -524,6 +524,14 @@ button:active {
         padding: 18px;
     }
 }
+
+.entry-tabs { display:flex; gap:8px; margin: 4px 0 18px; }
+.entry-tab { flex:1; border:1px solid #303030; background:#080808; color:#aaa; }
+.entry-tab.active { border-color:#777; background:#171717; color:#fff; }
+.entry-form-panel { display:none; }
+.entry-form-panel.active { display:block; }
+@media (max-width:520px) { .entry-tabs { flex-direction:column; } }
+
 </style>
 </head>
 
@@ -564,13 +572,32 @@ button:active {
     <div id="adminContent">
 
         <div class="card">
-
-            <button class="menu-button" onclick="toggleMenu('taskForm')">
-                <span>Додати домашнє завдання</span>
-                <span>+</span>
+            <button class="menu-button" onclick="toggleMenu('appSettingsForm')">
+                <span>Налаштування навчального центру</span><span>⚙</span>
             </button>
+            <div id="appSettingsForm" class="form-content">
+                <label for="onlineLinksToggle">Посилання для дистанційного навчання</label>
+                <select id="onlineLinksToggle">
+                    <option value="true">Показувати посилання</option>
+                    <option value="false">Приховувати посилання</option>
+                </select>
+                <div class="small">Це налаштування одночасно діє на розкладі та робочому столі.</div>
+                <div class="actions"><button class="primary" onclick="saveAppSettings()">Зберегти налаштування</button></div>
+                <div id="appSettingsStatus" class="status"></div>
+            </div>
+        </div>
 
-            <div id="taskForm" class="form-content">
+
+        <div class="card">
+            <button class="menu-button" onclick="toggleMenu('plannerForm')">
+                <span>Додати домашнє завдання або подію</span><span>＋</span>
+            </button>
+            <div id="plannerForm" class="form-content">
+                <div class="entry-tabs">
+                    <button type="button" id="taskTab" class="entry-tab active" onclick="showEntryForm('task')">Домашнє завдання</button>
+                    <button type="button" id="eventTab" class="entry-tab" onclick="showEntryForm('event')">Подія</button>
+                </div>
+            <div id="taskForm" class="entry-form-panel active">
 
                 <label for="taskSubject">Предмет</label>
                 <select id="taskSubject">
@@ -631,23 +658,16 @@ button:active {
                 <div id="taskStatus" class="status"></div>
 
             </div>
-        </div>
-
-
-        <div class="card">
-
-            <button class="menu-button" onclick="toggleMenu('eventForm')">
-                <span>Додати подію</span>
-                <span>+</span>
-            </button>
-
-            <div id="eventForm" class="form-content">
+            <div id="eventForm" class="entry-form-panel">
 
                 <label>Тип події</label>
 
                 <div id="eventTypeButtons" class="type-buttons">
                     <button type="button" class="type-button active" data-type="" onclick="selectEventType(this)">Без типу</button>
                     <button type="button" class="type-button" data-type="Семінар" onclick="selectEventType(this)">Семінар</button>
+                    <button type="button" class="type-button" data-type="Модульна контрольна" onclick="selectEventType(this)">Модульна контрольна</button>
+                    <button type="button" class="type-button" data-type="Перездача" onclick="selectEventType(this)">Перездача</button>
+                    <button type="button" class="type-button" data-type="Дедлайн" onclick="selectEventType(this)">Дедлайн</button>
                     <button type="button" class="type-button" data-type="Іспит" onclick="selectEventType(this)">Іспит</button>
                     <button type="button" class="type-button" data-type="Залік" onclick="selectEventType(this)">Залік</button>
                     <button type="button" class="type-button" data-type="Консультація" onclick="selectEventType(this)">Консультація</button>
@@ -696,6 +716,7 @@ button:active {
 
                 <div id="eventStatus" class="status"></div>
 
+            </div>
             </div>
         </div>
 
@@ -917,6 +938,7 @@ async function loadAll() {
     await loadTasks();
     await loadEvents();
     await loadSchedule();
+    await loadAppSettings();
 }
 
 
@@ -1038,6 +1060,36 @@ async function loadEvents() {
 
     renderEvents();
 
+}
+
+
+async function loadAppSettings() {
+    const status = document.getElementById("appSettingsStatus");
+    const { data, error } = await supabaseClient
+        .from("app_settings")
+        .select("id, online_links_enabled")
+        .eq("id", 1)
+        .maybeSingle();
+    if (error) {
+        console.error("Помилка налаштувань:", error);
+        if (status) { status.textContent = "Не вдалося завантажити налаштування. Перевір SQL-міграцію."; status.className = "status error"; }
+        return;
+    }
+    const settings = data || { online_links_enabled: true };
+    document.getElementById("onlineLinksToggle").value = String(settings.online_links_enabled !== false);
+}
+
+async function saveAppSettings() {
+    const status = document.getElementById("appSettingsStatus");
+    status.textContent = "Збереження…"; status.className = "status";
+    const payload = {
+        id: 1,
+        online_links_enabled: document.getElementById("onlineLinksToggle").value === "true",
+        updated_at: new Date().toISOString()
+    };
+    const { error } = await supabaseClient.from("app_settings").upsert(payload, { onConflict: "id" });
+    if (error) { status.textContent = error.message; status.className = "status error"; return; }
+    status.textContent = "Налаштування збережено."; status.className = "status success";
 }
 
 
@@ -1493,6 +1545,9 @@ function eventEditForm(event) {
     const types = [
         "",
         "Семінар",
+        "Модульна контрольна",
+        "Перездача",
+        "Дедлайн",
         "Іспит",
         "Залік",
         "Консультація",
@@ -2075,6 +2130,14 @@ async function saveScheduleSettings() {
 
 function toggleMenu(id) {
     document.getElementById(id).classList.toggle("open");
+}
+
+function showEntryForm(type) {
+    const isTask = type === "task";
+    document.getElementById("taskForm").classList.toggle("active", isTask);
+    document.getElementById("eventForm").classList.toggle("active", !isTask);
+    document.getElementById("taskTab").classList.toggle("active", isTask);
+    document.getElementById("eventTab").classList.toggle("active", !isTask);
 }
 
 

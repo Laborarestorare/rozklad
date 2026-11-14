@@ -1,11 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="uk">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Домашнє завдання</title>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
@@ -14,180 +13,269 @@
 }
 
 :root {
-    --black: #000000;
-    --surface: #050505;
-    --surface-1: #080808;
-    --surface-2: #0c0c0c;
-    --surface-3: #101010;
-    --surface-4: #151515;
+    --bg: #000000;
+    --panel: #0b0b0b;
+    --column: #080808;
+    --card: #111111;
+    --inner: #191919;
+    --text: #ededed;
+    --muted: #858585;
+    --line: #242424;
 
-    --white: #f4f4f4;
-    --white-soft: #d9d9d9;
-    --gray-1: #b7b7b7;
-    --gray-2: #999999;
-    --gray-3: #777777;
-    --gray-4: #5e5e5e;
-
-    --border: rgba(255,255,255,.105);
-    --border-soft: rgba(255,255,255,.065);
-    --border-medium: rgba(255,255,255,.15);
-
-    --blue: #4da3ff;
-    --blue-soft: rgba(77,163,255,.12);
-    --blue-border: rgba(77,163,255,.32);
-
-    --shadow: 0 14px 45px rgba(0,0,0,.38);
-    --shadow-soft: 0 8px 28px rgba(0,0,0,.28);
-}
-
-html {
-    background: var(--black);
+    --task-accent: #927052;
+    --event-accent: #687f91;
+    --neutral-accent: #aaaaaa;
 }
 
 body {
     margin: 0;
-    background: var(--black);
-    color: var(--white);
+    background: var(--bg);
+    color: var(--text);
     font-family: Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
 }
 
 .container {
-    max-width: 900px;
+    max-width: 1050px;
     margin: 0 auto;
     padding: 20px;
 }
 
-.header,
-.section {
-    background: linear-gradient(
-        145deg,
-        #090909 0%,
-        #050505 55%,
-        #080808 100%
-    );
-    border: 1px solid var(--border);
-    box-shadow:
-        var(--shadow),
-        inset 0 1px 0 rgba(255,255,255,.025);
-}
-
 .header {
-    border-radius: 20px;
-    padding: 24px;
-    margin-bottom: 20px;
+    background: var(--panel);
+    border: 1px solid #1b1b1b;
+    border-radius: 17px;
+    padding: 23px 24px;
+    margin-bottom: 18px;
 }
 
 .header-top {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
     gap: 15px;
 }
 
 .header h1 {
     margin: 0 0 8px;
-    font-size: 28px;
-    letter-spacing: -.4px;
+    font-size: 27px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
 }
 
 #today {
-    color: var(--gray-2);
-    font-size: 15px;
+    color: var(--muted);
+    font-size: 14px;
 }
 
 .schedule-button {
-    border: 1px solid var(--border);
-    border-radius: 11px;
-    padding: 9px 13px;
-    background: #0d0d0d;
-    color: var(--gray-1);
-    cursor: pointer;
-    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 15px;
+    border: 1px solid #303030;
+    border-radius: 9px;
+    background: #050505;
+    color: #e5e5e5;
     text-decoration: none;
     white-space: nowrap;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.025);
-    transition:
-        background .18s ease,
-        color .18s ease,
-        border-color .18s ease;
+    font-size: 13px;
+    transition: .18s ease;
 }
 
 .schedule-button:hover {
-    background: #141414;
-    color: var(--white);
-    border-color: var(--border-medium);
+    border-color: #555;
+    background: #101010;
+    color: #fff;
+}
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.summary-card {
+    min-width: 0;
+    background: var(--panel);
+    border: 1px solid #1b1b1b;
+    border-radius: 14px;
+    padding: 16px;
+}
+
+.summary-label {
+    color: var(--muted);
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+
+.summary-date {
+    font-size: 19px;
+    font-weight: 600;
+    margin-bottom: 5px;
+    overflow-wrap: anywhere;
+}
+
+.summary-name {
+    color: #999;
+    font-size: 13px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+.summary-card.priority {
+    border-color: #303030;
+}
+
+.summary-card.priority .summary-date {
+    color: #dedede;
 }
 
 .section {
-    border-radius: 20px;
+    background: var(--panel);
+    border: 1px solid #1b1b1b;
+    border-radius: 17px;
     padding: 20px;
-    margin-bottom: 20px;
+    margin-bottom: 18px;
 }
 
 .section h2 {
     margin: 0 0 16px;
-    font-size: 21px;
-    letter-spacing: -.25px;
+    font-size: 19px;
+    font-weight: 600;
 }
 
-.task {
-    background: var(--surface-2);
-    border: 1px solid var(--border-soft);
-    border-radius: 15px;
-    padding: 17px;
-    margin-bottom: 12px;
-    box-shadow:
-        0 7px 24px rgba(0,0,0,.22),
-        inset 0 1px 0 rgba(255,255,255,.018);
+.columns {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
 }
 
-.task:last-child {
+.column {
+    min-width: 0;
+    background: var(--column);
+    border: 1px solid #202020;
+    border-radius: 13px;
+    padding: 15px;
+}
+
+.column-heading {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-bottom: 14px;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.column-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex: 0 0 auto;
+}
+
+.task-dot {
+    background: var(--task-accent);
+}
+
+.event-dot {
+    background: var(--event-accent);
+}
+
+.upcoming-item {
+    background: var(--card);
+    border: 1px solid #242424;
+    border-left: 3px solid var(--task-accent);
+    border-radius: 10px;
+    padding: 13px 14px;
+    margin-bottom: 9px;
+}
+
+.upcoming-item:last-child {
     margin-bottom: 0;
 }
 
-.task-subject {
-    color: var(--gray-2);
-    font-size: 14px;
+.upcoming-item.event-upcoming {
+    border-left-color: var(--event-accent);
+}
+
+.upcoming-item.important-upcoming {
+    border-left-color: var(--neutral-accent);
+}
+
+.upcoming-label {
+    color: #a18a75;
+    font-size: 12px;
     margin-bottom: 6px;
 }
 
-.task-title {
-    font-size: 19px;
+.upcoming-label.event-upcoming {
+    color: #879baa;
+}
+
+.upcoming-label.important-upcoming {
+    color: #bcbcbc;
+}
+
+.upcoming-title {
+    font-size: 16px;
     font-weight: 600;
-    margin-bottom: 7px;
+    line-height: 1.35;
+    margin-bottom: 6px;
+    overflow-wrap: anywhere;
 }
 
-.task-description {
-    color: var(--white-soft);
+.upcoming-info {
+    color: #999;
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.upcoming-description {
+    color: #bdbdbd;
+    font-size: 13px;
     line-height: 1.5;
-    margin-bottom: 12px;
+    margin-top: 8px;
+    white-space: pre-line;
 }
 
-.task-info {
+.upcoming-extra {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 6px;
+    margin-top: 9px;
 }
 
-.info {
-    background: #111111;
-    border: 1px solid var(--border-soft);
-    border-radius: 9px;
-    padding: 7px 10px;
-    font-size: 13px;
-    color: var(--white-soft);
+.upcoming-extra span {
+    background: var(--inner);
+    border: 1px solid #292929;
+    border-radius: 7px;
+    padding: 5px 8px;
+    color: #aaa;
+    font-size: 12px;
 }
 
-.material {
+.upcoming-link {
     display: inline-block;
-    margin-top: 12px;
-    color: #8ab4f8;
+    margin: 8px 10px 0 0;
+    color: #91a5b5;
     text-decoration: none;
+    font-size: 13px;
+    overflow-wrap: anywhere;
 }
 
-.material:hover {
+.upcoming-link:hover {
+    color: #c2d0da;
     text-decoration: underline;
+}
+
+.empty {
+    color: #707070;
+    text-align: center;
+    padding: 18px 8px;
+    font-size: 13px;
 }
 
 .calendar-header {
@@ -198,31 +286,25 @@ body {
 }
 
 .calendar-header button {
-    border: 1px solid var(--border);
-    background: #0b0b0b;
-    color: var(--white-soft);
-    width: 38px;
-    height: 38px;
-    border-radius: 11px;
+    width: 36px;
+    height: 36px;
+    border: 1px solid #292929;
+    background: #111;
+    color: #dedede;
+    border-radius: 9px;
     cursor: pointer;
-    font-size: 18px;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.025);
-    transition:
-        background .18s ease,
-        border-color .18s ease,
-        color .18s ease;
+    font-size: 19px;
+    transition: .18s ease;
 }
 
 .calendar-header button:hover {
-    background: #151515;
-    border-color: var(--border-medium);
-    color: var(--white);
+    background: #1c1c1c;
+    border-color: #444;
 }
 
 #monthTitle {
-    font-size: 19px;
+    font-size: 18px;
     font-weight: 600;
-    color: var(--white-soft);
 }
 
 .calendar-weekdays,
@@ -238,57 +320,43 @@ body {
 
 .weekday {
     text-align: center;
-    color: var(--gray-3);
+    color: #777;
     font-size: 12px;
     padding: 6px 0;
 }
 
 .day {
     min-height: 72px;
-    background: #080808;
-    border: 1px solid var(--border-soft);
-    border-radius: 12px;
+    background: #101010;
+    border: 1px solid transparent;
+    border-radius: 10px;
     padding: 8px;
     cursor: pointer;
     position: relative;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.018);
-    transition:
-        background .18s ease,
-        border-color .18s ease,
-        transform .18s ease;
+    transition: background .15s ease;
 }
 
 .day:hover {
-    background: #101010;
-    border-color: var(--border);
+    background: #191919;
 }
 
 .day.empty {
     background: transparent;
-    border-color: transparent;
     cursor: default;
-    box-shadow: none;
 }
 
 .day-number {
     font-size: 14px;
-    color: var(--white-soft);
+    color: #dedede;
 }
 
 .day.today {
-    outline: 1px solid rgba(255,255,255,.25);
-    outline-offset: -1px;
-    background: #0c0c0c;
+    border-color: #555;
 }
 
 .day.selected {
-    background: #111111;
-    outline: 1px solid rgba(255,255,255,.3);
-    outline-offset: -1px;
-    border-color: rgba(255,255,255,.16);
-    box-shadow:
-        inset 0 1px 0 rgba(255,255,255,.035),
-        0 5px 18px rgba(0,0,0,.25);
+    background: #202020;
+    border-color: #777;
 }
 
 .day-markers {
@@ -299,229 +367,134 @@ body {
 }
 
 .task-marker {
-    color: #d8d8d8;
-    font-size: 18px;
+    color: var(--task-accent);
+    font-size: 15px;
     line-height: 1;
 }
 
 .event-marker {
-    color: var(--blue);
-    font-size: 20px;
+    color: var(--event-accent);
+    font-size: 17px;
     line-height: 1;
     font-weight: bold;
 }
 
 .calendar-legend {
     display: flex;
+    flex-wrap: wrap;
     gap: 18px;
     margin-top: 15px;
-    color: var(--gray-2);
-    font-size: 13px;
-    padding: 11px 13px;
-    background: #060606;
-    border: 1px solid var(--border-soft);
-    border-radius: 11px;
+    color: #888;
+    font-size: 12px;
 }
 
 .legend-task {
-    color: #d8d8d8;
-    font-size: 17px;
+    color: var(--task-accent);
+    font-size: 16px;
 }
 
 .legend-event {
-    color: var(--blue);
-    font-size: 19px;
+    color: var(--event-accent);
+    font-size: 16px;
     font-weight: bold;
 }
 
 .day-details {
     margin-top: 18px;
-    padding-top: 2px;
 }
 
 .day-details-title {
-    color: var(--gray-2);
-    font-size: 14px;
+    color: #999;
+    font-size: 13px;
     margin-bottom: 10px;
-    padding-left: 2px;
 }
 
 .calendar-item {
-    background: linear-gradient(
-        145deg,
-        #0d0d0d,
-        #080808
-    );
-    border: 1px solid var(--border-soft);
-    border-radius: 13px;
+    background: var(--card);
+    border: 1px solid #242424;
+    border-left: 3px solid var(--task-accent);
+    border-radius: 10px;
     padding: 14px;
     margin-bottom: 9px;
-    box-shadow:
-        0 7px 24px rgba(0,0,0,.22),
-        inset 0 1px 0 rgba(255,255,255,.018);
 }
 
 .calendar-item:last-child {
     margin-bottom: 0;
 }
 
-.calendar-item.task-item {
-    border-left: 3px solid rgba(255,255,255,.28);
-}
-
 .calendar-item.event-item {
-    border-left: 3px solid var(--blue);
-    background:
-        linear-gradient(
-            145deg,
-            rgba(77,163,255,.035),
-            #080808 65%
-        );
+    border-left-color: var(--event-accent);
 }
 
 .item-label {
-    font-size: 13px;
-    color: var(--gray-2);
-    margin-bottom: 5px;
+    font-size: 12px;
+    color: #a18a75;
+    margin-bottom: 6px;
+}
+
+.item-label.event-type {
+    color: #879baa;
 }
 
 .item-title {
-    font-size: 17px;
+    font-size: 16px;
     font-weight: 600;
     margin-bottom: 6px;
-    color: var(--white);
+    overflow-wrap: anywhere;
 }
 
 .item-description {
-    color: #c7c7c7;
-    line-height: 1.45;
+    color: #bdbdbd;
+    font-size: 13px;
+    line-height: 1.5;
     margin-bottom: 9px;
+    white-space: pre-line;
 }
 
 .item-info {
-    color: var(--gray-2);
-    font-size: 13px;
+    color: #929292;
+    font-size: 12px;
+    line-height: 1.5;
     margin-top: 5px;
 }
 
-.event-type {
-    color: var(--blue);
-}
-
-.empty {
-    color: var(--gray-3);
-    text-align: center;
-    padding: 10px 0;
-}
-
-.upcoming-item {
-    position: relative;
-    background: linear-gradient(
-        145deg,
-        #0d0d0d 0%,
-        #080808 100%
-    );
-    border: 1px solid var(--border-soft);
-    border-radius: 14px;
-    padding: 14px 15px;
-    margin-bottom: 9px;
-    border-left: 3px solid rgba(255,255,255,.25);
-    box-shadow:
-        0 7px 24px rgba(0,0,0,.24),
-        inset 0 1px 0 rgba(255,255,255,.018);
-    transition:
-        background .18s ease,
-        border-color .18s ease,
-        transform .18s ease;
-}
-
-.upcoming-item:hover {
-    background: #101010;
-    border-color: var(--border);
-}
-
-.upcoming-item:last-child {
-    margin-bottom: 0;
-}
-
-.upcoming-item.event-upcoming {
-    border-left-color: var(--blue);
-    background:
-        linear-gradient(
-            145deg,
-            rgba(77,163,255,.045),
-            #080808 68%
-        );
-}
-
-.upcoming-label {
-    color: var(--gray-2);
-    font-size: 12px;
-    margin-bottom: 5px;
-    letter-spacing: .1px;
-}
-
-.upcoming-label.event-upcoming {
-    color: var(--blue);
-}
-
-.upcoming-title {
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 5px;
-    color: var(--white);
-}
-
-.upcoming-info {
-    color: #a7a7a7;
-    font-size: 13px;
-    line-height: 1.45;
-}
-
-.upcoming-description {
-    color: #c5c5c5;
-    font-size: 13px;
-    line-height: 1.45;
-    margin-top: 7px;
-}
-
-.upcoming-extra {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-top: 8px;
-}
-
-.upcoming-extra span {
-    background: #111111;
-    border: 1px solid var(--border-soft);
-    border-radius: 8px;
-    padding: 5px 8px;
-    color: #b7b7b7;
-    font-size: 12px;
-}
-
-.upcoming-link {
+.material {
     display: inline-block;
     margin-top: 8px;
-    color: #8ab4f8;
+    color: #91a5b5;
     text-decoration: none;
-    font-size: 13px;
 }
 
-.upcoming-link:hover {
+.material:hover {
     text-decoration: underline;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 700px) {
     .container {
         padding: 12px;
     }
 
+    .summary-grid {
+        grid-template-columns: 1fr;
+        gap: 9px;
+    }
+
+    .summary-card {
+        padding: 14px;
+    }
+
+    .columns {
+        grid-template-columns: 1fr;
+    }
+
     .header,
     .section {
-        border-radius: 16px;
+        border-radius: 14px;
         padding: 16px;
+    }
+
+    .header h1 {
+        font-size: 23px;
     }
 
     .header-top {
@@ -536,7 +509,6 @@ body {
     .day {
         min-height: 58px;
         padding: 6px;
-        border-radius: 10px;
     }
 
     .day-markers {
@@ -545,14 +517,31 @@ body {
 
     .calendar-legend {
         gap: 12px;
-        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 370px) {
+    .header-top {
+        flex-direction: column;
+    }
+
+    .schedule-button {
+        align-self: flex-start;
+    }
+
+    .day {
+        min-height: 49px;
+        padding: 5px;
+    }
+
+    .day-number {
+        font-size: 12px;
     }
 }
 </style>
 </head>
 
 <body>
-
 <div class="container">
 
     <div class="header">
@@ -562,20 +551,59 @@ body {
                 <div id="today"></div>
             </div>
 
-            <a class="schedule-button" href="index.html">Розклад</a>
+            <a class="schedule-button" href="index.html">
+                Відкрити розклад →
+            </a>
+        </div>
+    </div>
+
+    <div class="summary-grid">
+        <div class="summary-card">
+            <div class="summary-label">Найближчий дедлайн</div>
+            <div class="summary-date" id="deadlineSummary">—</div>
+            <div class="summary-name" id="deadlineSub">Немає майбутніх дедлайнів</div>
+        </div>
+
+        <div class="summary-card">
+            <div class="summary-label">Наступна подія</div>
+            <div class="summary-date" id="eventSummary">—</div>
+            <div class="summary-name" id="eventSub">Немає запланованих подій</div>
+        </div>
+
+        <div class="summary-card priority">
+            <div class="summary-label">Найближче важливе</div>
+            <div class="summary-date" id="prioritySummary">—</div>
+            <div class="summary-name" id="prioritySub">Наразі важливих дат немає</div>
         </div>
     </div>
 
     <div class="section">
-        <h2>Найближчі завдання</h2>
-        <div id="tasksList"></div>
+        <h2>Найближче за планом</h2>
+
+        <div class="columns">
+            <div class="column">
+                <div class="column-heading">
+                    <span class="column-dot task-dot"></span>
+                    Домашні завдання
+                </div>
+                <div id="tasksList"></div>
+            </div>
+
+            <div class="column">
+                <div class="column-heading">
+                    <span class="column-dot event-dot"></span>
+                    Навчальні події
+                </div>
+                <div id="eventsList"></div>
+            </div>
+        </div>
     </div>
 
     <div class="section">
         <div class="calendar-header">
-            <button onclick="changeMonth(-1)">‹</button>
+            <button onclick="changeMonth(-1)" aria-label="Попередній місяць">‹</button>
             <div id="monthTitle"></div>
-            <button onclick="changeMonth(1)">›</button>
+            <button onclick="changeMonth(1)" aria-label="Наступний місяць">›</button>
         </div>
 
         <div class="calendar-weekdays">
@@ -623,18 +651,9 @@ let calendarDate = new Date(
 let selectedDate = formatDateKey(today);
 
 const monthNames = [
-    "Січень",
-    "Лютий",
-    "Березень",
-    "Квітень",
-    "Травень",
-    "Червень",
-    "Липень",
-    "Серпень",
-    "Вересень",
-    "Жовтень",
-    "Листопад",
-    "Грудень"
+    "Січень", "Лютий", "Березень", "Квітень",
+    "Травень", "Червень", "Липень", "Серпень",
+    "Вересень", "Жовтень", "Листопад", "Грудень"
 ];
 
 function escapeHtml(value) {
@@ -661,9 +680,7 @@ function formatDateOnly(dateString) {
 
     const parts = String(dateString).split("-");
 
-    if (parts.length !== 3) {
-        return String(dateString);
-    }
+    if (parts.length !== 3) return String(dateString);
 
     return `${parts[2]}.${parts[1]}.${parts[0]}`;
 }
@@ -673,9 +690,7 @@ function formatDateTime(value) {
 
     const date = new Date(value);
 
-    if (Number.isNaN(date.getTime())) {
-        return String(value);
-    }
+    if (Number.isNaN(date.getTime())) return String(value);
 
     const day = String(date.getDate()).padStart(2, "0");
     const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -691,11 +706,7 @@ function formatTime(value) {
 
     const match = String(value).match(/(\d{2}):(\d{2})/);
 
-    if (!match) {
-        return String(value);
-    }
-
-    return `${match[1]}:${match[2]}`;
+    return match ? `${match[1]}:${match[2]}` : String(value);
 }
 
 function showCurrentDate() {
@@ -734,6 +745,7 @@ async function loadTasks() {
     tasks = data || [];
 
     renderTasks();
+    renderSummaryCards();
     renderCalendar();
     renderSelectedDay();
 }
@@ -758,17 +770,18 @@ async function loadEvents() {
         events = data || [];
     }
 
+    renderEvents();
+    renderSummaryCards();
     renderCalendar();
     renderSelectedDay();
-    renderTasks();
 }
 
 function getUpcomingTaskDate(task) {
-    if (!task.deadline) {
-        return null;
-    }
+    if (!task.deadline) return null;
 
     const deadline = new Date(`${task.deadline}T23:59:59`);
+
+    if (Number.isNaN(deadline.getTime())) return null;
 
     if (task.start_time) {
         const match = String(task.start_time).match(/(\d{2}):(\d{2})/);
@@ -787,17 +800,62 @@ function getUpcomingTaskDate(task) {
 }
 
 function getUpcomingEventDate(event) {
-    if (!event.start_at) {
-        return null;
-    }
+    if (!event.start_at) return null;
 
     const date = new Date(event.start_at);
 
-    if (Number.isNaN(date.getTime())) {
-        return null;
+    return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function getEventDate(event) {
+    const date = getUpcomingEventDate(event);
+    return date ? formatDateKey(date) : null;
+}
+
+function getTaskEndDate(task) {
+    const date = getUpcomingTaskDate(task);
+    if (!date) return null;
+
+    if (task.end_time && task.deadline) {
+        const match = String(task.end_time).match(/(\d{2}):(\d{2})/);
+
+        if (match) {
+            date.setHours(
+                Number(match[1]),
+                Number(match[2]),
+                0,
+                0
+            );
+        }
     }
 
     return date;
+}
+
+function getRelativeDate(date) {
+    if (!date) return "—";
+
+    const target = new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate()
+    );
+
+    const base = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        today.getDate()
+    );
+
+    const diff = Math.round((target - base) / 86400000);
+
+    if (diff === 0) return "Сьогодні";
+    if (diff === 1) return "Завтра";
+
+    return date.toLocaleDateString("uk-UA", {
+        day: "numeric",
+        month: "long"
+    });
 }
 
 function parseMaterials(value) {
@@ -808,43 +866,51 @@ function parseMaterials(value) {
         .map(item => item.trim())
         .filter(Boolean)
         .map(item => {
+            if (/^https?:\/\//i.test(item)) {
+                try {
+                    const url = new URL(item);
 
-            if (item.startsWith("http://") || item.startsWith("https://")) {
-                return {
-                    name: "Матеріал",
-                    url: item
-                };
+                    if (url.protocol === "http:" || url.protocol === "https:") {
+                        return {
+                            name: "Матеріал",
+                            url: item
+                        };
+                    }
+                } catch (error) {
+                    return null;
+                }
             }
 
             const slashIndex = item.indexOf("/");
 
             if (slashIndex > 0) {
                 const name = item.slice(0, slashIndex).trim();
-                const url = item.slice(slashIndex + 1).trim();
+                const urlValue = item.slice(slashIndex + 1).trim();
 
-                if (name && (url.startsWith("http://") || url.startsWith("https://"))) {
-                    return {
-                        name,
-                        url
-                    };
+                try {
+                    const url = new URL(urlValue);
+
+                    if (
+                        name &&
+                        (url.protocol === "http:" || url.protocol === "https:")
+                    ) {
+                        return {
+                            name,
+                            url: urlValue
+                        };
+                    }
+                } catch (error) {
+                    return null;
                 }
             }
 
-            return {
-                name: "Матеріал",
-                url: item
-            };
-        });
+            return null;
+        })
+        .filter(Boolean);
 }
 
 function renderMaterialLinks(material) {
-    const links = parseMaterials(material);
-
-    if (!links.length) {
-        return "";
-    }
-
-    return links.map(link => `
+    return parseMaterials(material).map(link => `
         <a class="upcoming-link"
            href="${escapeHtml(link.url)}"
            target="_blank"
@@ -854,148 +920,131 @@ function renderMaterialLinks(material) {
     `).join("");
 }
 
+function getEventType(event) {
+    const savedType = String(event.event_type || "").trim();
+
+    if (savedType) return savedType;
+
+    const title = String(event.title || "").toLowerCase();
+
+    if (title.includes("семінар")) return "Семінар";
+    if (title.includes("іспит") || title.includes("екзамен")) return "Іспит";
+    if (title.includes("залік")) return "Залік";
+    if (title.includes("консульта")) return "Консультація";
+    if (title.includes("лекці")) return "Лекція";
+
+    return "Подія";
+}
+
+function isExamEvent(event) {
+    const type = getEventType(event).toLowerCase();
+    const title = String(event.title || "").toLowerCase();
+
+    return type.includes("залік") ||
+           type.includes("іспит") ||
+           type.includes("екзамен") ||
+           title.includes("залік") ||
+           title.includes("іспит") ||
+           title.includes("екзамен");
+}
+
+function renderSummaryCards() {
+    const now = new Date();
+
+    const upcomingTasks = tasks
+        .filter(task => task.deadline)
+        .map(task => ({
+            data: task,
+            date: getTaskEndDate(task)
+        }))
+        .filter(item => item.date && item.date >= now)
+        .sort((a, b) => a.date - b.date);
+
+    const upcomingEvents = events
+        .map(event => ({
+            data: event,
+            date: getUpcomingEventDate(event)
+        }))
+        .filter(item => item.date && item.date >= now)
+        .sort((a, b) => a.date - b.date);
+
+    const deadline = upcomingTasks[0];
+
+    document.getElementById("deadlineSummary").textContent =
+        deadline ? getRelativeDate(deadline.date) : "—";
+
+    document.getElementById("deadlineSub").textContent =
+        deadline
+            ? (deadline.data.title || "Домашнє завдання")
+            : "Немає майбутніх дедлайнів";
+
+    const nextEvent = upcomingEvents[0];
+
+    document.getElementById("eventSummary").textContent =
+        nextEvent ? getRelativeDate(nextEvent.date) : "—";
+
+    document.getElementById("eventSub").textContent =
+        nextEvent
+            ? `${getEventType(nextEvent.data)} · ${nextEvent.data.title || "Подія"}`
+            : "Немає запланованих подій";
+
+    const nearestExam = upcomingEvents.find(item =>
+        isExamEvent(item.data)
+    );
+
+    let priority = null;
+    let priorityLabel = "";
+
+    if (nearestExam) {
+        priority = nearestExam;
+        priorityLabel = getEventType(nearestExam.data);
+    } else if (deadline) {
+        priority = deadline;
+        priorityLabel = "Домашнє завдання";
+    } else if (nextEvent) {
+        priority = nextEvent;
+        priorityLabel = getEventType(nextEvent.data);
+    }
+
+    document.getElementById("prioritySummary").textContent =
+        priority ? getRelativeDate(priority.date) : "—";
+
+    document.getElementById("prioritySub").textContent =
+        priority
+            ? `${priorityLabel} · ${priority.data.title || "Без назви"}`
+            : "Наразі важливих дат немає";
+}
+
 function renderTasks() {
     const container = document.getElementById("tasksList");
     const now = new Date();
 
     const upcomingTasks = tasks
         .map(task => ({
-            type: "task",
             data: task,
-            date: getUpcomingTaskDate(task)
+            date: getTaskEndDate(task)
         }))
         .filter(item => {
             if (!item.date) return true;
-
-            const endDate = item.data.end_time
-                ? new Date(item.date)
-                : item.date;
-
-            if (item.data.end_time && item.data.deadline) {
-                const match = String(item.data.end_time).match(/(\d{2}):(\d{2})/);
-
-                if (match) {
-                    endDate.setHours(
-                        Number(match[1]),
-                        Number(match[2]),
-                        0,
-                        0
-                    );
-                }
-            }
-
-            return endDate >= now;
-        });
-
-    const upcomingEvents = events
-        .map(event => ({
-            type: "event",
-            data: event,
-            date: getUpcomingEventDate(event)
-        }))
-        .filter(item => item.date && item.date >= now);
-
-    const upcomingItems = [
-        ...upcomingTasks,
-        ...upcomingEvents
-    ]
+            return item.date >= now;
+        })
         .sort((a, b) => {
             if (!a.date && !b.date) return 0;
             if (!a.date) return 1;
             if (!b.date) return -1;
-
             return a.date - b.date;
         })
         .slice(0, 5);
 
-    if (!upcomingItems.length) {
+    if (!upcomingTasks.length) {
         container.innerHTML =
-            `<div class="empty">Найближчих завдань немає.</div>`;
+            `<div class="empty">Найближчих домашніх завдань немає.</div>`;
         return;
     }
 
-    container.innerHTML = upcomingItems.map(item => {
-        if (item.type === "event") {
-            const event = item.data;
-            const type = getEventType(event);
-            const subject = event.subjects?.name || "";
-
-            let time = "";
-
-            if (event.start_at) {
-                const start = new Date(event.start_at);
-
-                if (!Number.isNaN(start.getTime())) {
-                    const day = String(start.getDate()).padStart(2, "0");
-                    const month = String(start.getMonth() + 1).padStart(2, "0");
-                    const hours = String(start.getHours()).padStart(2, "0");
-                    const minutes = String(start.getMinutes()).padStart(2, "0");
-
-                    time = `${day}.${month} · ${hours}:${minutes}`;
-
-                    if (event.end_at) {
-                        const end = new Date(event.end_at);
-
-                        if (!Number.isNaN(end.getTime())) {
-                            time += `–${String(end.getHours()).padStart(2, "0")}:${String(end.getMinutes()).padStart(2, "0")}`;
-                        }
-                    }
-                }
-            }
-
-            return `
-                <div class="upcoming-item event-upcoming">
-                    <div class="upcoming-label event-upcoming">
-                        * ${escapeHtml(type)}
-                        ${subject ? ` · ${escapeHtml(subject)}` : ""}
-                    </div>
-
-                    <div class="upcoming-title">
-                        ${escapeHtml(event.title || "Подія")}
-                    </div>
-
-                    ${
-                        time
-                        ? `
-                            <div class="upcoming-info">
-                                ${escapeHtml(time)}
-                            </div>
-                        `
-                        : ""
-                    }
-
-                    ${
-                        event.description
-                        ? `
-                            <div class="upcoming-description">
-                                ${escapeHtml(event.description)}
-                            </div>
-                        `
-                        : ""
-                    }
-
-                    ${
-                        event.info
-                        ? `
-                            <div class="upcoming-extra">
-                                <span>ℹ ${escapeHtml(event.info)}</span>
-                            </div>
-                        `
-                        : ""
-                    }
-
-                    ${
-                        event.link
-                        ? renderMaterialLinks(event.link)
-                        : ""
-                    }
-                </div>
-            `;
-        }
-
+    container.innerHTML = upcomingTasks.map(item => {
         const task = item.data;
-        const subject =
-            task.subjects?.name || "";
+        const subject = task.subjects?.name || "";
 
         let info = "";
 
@@ -1005,9 +1054,7 @@ function renderTasks() {
 
         if (task.start_time) {
             const start = formatTime(task.start_time);
-            const end = task.end_time
-                ? formatTime(task.end_time)
-                : "";
+            const end = task.end_time ? formatTime(task.end_time) : "";
 
             if (info) info += " · ";
 
@@ -1020,84 +1067,115 @@ function renderTasks() {
             extra.push(`<span>Бали: ${escapeHtml(task.points)}</span>`);
         }
 
+        if (task.duration_minutes) {
+            extra.push(`<span>${escapeHtml(task.duration_minutes)} хв</span>`);
+        }
+
         return `
             <div class="upcoming-item">
                 <div class="upcoming-label">
-                    ${subject ? `● ${escapeHtml(subject)}` : "● Завдання"}
+                    ${subject ? escapeHtml(subject) : "Домашнє завдання"}
                 </div>
 
                 <div class="upcoming-title">
                     ${escapeHtml(task.title || "Завдання")}
                 </div>
 
-                ${
-                    info
-                    ? `
-                        <div class="upcoming-info">
-                            ${info}
-                        </div>
-                    `
-                    : ""
-                }
+                ${info ? `
+                    <div class="upcoming-info">${info}</div>
+                ` : ""}
 
-                ${
-                    task.description
-                    ? `
-                        <div class="upcoming-description">
-                            ${escapeHtml(task.description)}
-                        </div>
-                    `
-                    : ""
-                }
+                ${task.description ? `
+                    <div class="upcoming-description">
+                        ${escapeHtml(task.description)}
+                    </div>
+                ` : ""}
 
-                ${
-                    extra.length
-                    ? `
-                        <div class="upcoming-extra">
-                            ${extra.join("")}
-                        </div>
-                    `
-                    : ""
-                }
+                ${extra.length ? `
+                    <div class="upcoming-extra">${extra.join("")}</div>
+                ` : ""}
 
-                ${
-                    task.material
-                    ? renderMaterialLinks(task.material)
-                    : ""
-                }
+                ${task.material ? renderMaterialLinks(task.material) : ""}
             </div>
         `;
     }).join("");
 }
 
-function getEventDate(event) {
-    if (!event.start_at) return null;
+function renderEvents() {
+    const container = document.getElementById("eventsList");
+    const now = new Date();
 
-    const date = new Date(event.start_at);
+    const upcomingEvents = events
+        .map(event => ({
+            data: event,
+            date: getUpcomingEventDate(event)
+        }))
+        .filter(item => item.date && item.date >= now)
+        .sort((a, b) => a.date - b.date)
+        .slice(0, 5);
 
-    if (Number.isNaN(date.getTime())) {
-        return null;
+    if (!upcomingEvents.length) {
+        container.innerHTML =
+            `<div class="empty">Найближчих навчальних подій немає.</div>`;
+        return;
     }
 
-    return formatDateKey(date);
-}
+    container.innerHTML = upcomingEvents.map(item => {
+        const event = item.data;
+        const subject = event.subjects?.name || "";
+        const type = getEventType(event);
 
-function getEventType(event) {
-    const savedType = String(event.event_type || "").trim();
+        const start = getUpcomingEventDate(event);
+        let time = "";
 
-    if (savedType) {
-        return savedType;
-    }
+        if (start) {
+            const day = String(start.getDate()).padStart(2, "0");
+            const month = String(start.getMonth() + 1).padStart(2, "0");
+            const hours = String(start.getHours()).padStart(2, "0");
+            const minutes = String(start.getMinutes()).padStart(2, "0");
 
-    const title = String(event.title || "").toLowerCase();
+            time = `${day}.${month} · ${hours}:${minutes}`;
 
-    if (title.includes("семінар")) return "Семінар";
-    if (title.includes("іспит")) return "Іспит";
-    if (title.includes("залік")) return "Залік";
-    if (title.includes("консульта")) return "Консультація";
-    if (title.includes("лекці")) return "Лекція";
+            if (event.end_at) {
+                const end = new Date(event.end_at);
 
-    return "Подія";
+                if (!Number.isNaN(end.getTime())) {
+                    time += `–${String(end.getHours()).padStart(2, "0")}:${String(end.getMinutes()).padStart(2, "0")}`;
+                }
+            }
+        }
+
+        return `
+            <div class="upcoming-item event-upcoming">
+                <div class="upcoming-label event-upcoming">
+                    * ${escapeHtml(type)}
+                    ${subject ? ` · ${escapeHtml(subject)}` : ""}
+                </div>
+
+                <div class="upcoming-title">
+                    ${escapeHtml(event.title || "Подія")}
+                </div>
+
+                ${time ? `
+                    <div class="upcoming-info">${escapeHtml(time)}</div>
+                ` : ""}
+
+                ${event.description ? `
+                    <div class="upcoming-description">
+                        ${escapeHtml(event.description)}
+                    </div>
+                ` : ""}
+
+                ${event.info ? `
+                    <div class="upcoming-extra">
+                        <span>${escapeHtml(event.info)}</span>
+                    </div>
+                ` : ""}
+
+                ${event.link ? renderMaterialLinks(event.link) : ""}
+            </div>
+        `;
+    }).join("");
 }
 
 function getItemsForDate(dateKey) {
@@ -1122,21 +1200,17 @@ function renderCalendar() {
     const year = calendarDate.getFullYear();
     const month = calendarDate.getMonth();
 
-    monthTitle.textContent =
-        `${monthNames[month]} ${year}`;
+    monthTitle.textContent = `${monthNames[month]} ${year}`;
 
     const firstDay = new Date(year, month, 1);
 
     let startDay = firstDay.getDay();
 
-    if (startDay === 0) {
-        startDay = 7;
-    }
+    if (startDay === 0) startDay = 7;
 
     startDay -= 1;
 
-    const daysInMonth =
-        new Date(year, month + 1, 0).getDate();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
 
     let html = "";
 
@@ -1147,43 +1221,29 @@ function renderCalendar() {
     for (let day = 1; day <= daysInMonth; day++) {
         const date = new Date(year, month, day);
         const dateKey = formatDateKey(date);
-
         const items = getItemsForDate(dateKey);
 
-        const isToday =
-            dateKey === formatDateKey(today);
-
-        const isSelected =
-            dateKey === selectedDate;
+        const isToday = dateKey === formatDateKey(today);
+        const isSelected = dateKey === selectedDate;
 
         html += `
             <div
                 class="day ${isToday ? "today" : ""} ${isSelected ? "selected" : ""}"
                 onclick="selectDate('${dateKey}')"
             >
-                <div class="day-number">
-                    ${day}
-                </div>
+                <div class="day-number">${day}</div>
 
-                ${
-                    items.tasks.length || items.events.length
-                    ? `
-                        <div class="day-markers">
-                            ${
-                                items.tasks.length
-                                ? `<span class="task-marker">●</span>`
-                                : ""
-                            }
+                ${items.tasks.length || items.events.length ? `
+                    <div class="day-markers">
+                        ${items.tasks.length
+                            ? `<span class="task-marker">●</span>`
+                            : ""}
 
-                            ${
-                                items.events.length
-                                ? `<span class="event-marker">*</span>`
-                                : ""
-                            }
-                        </div>
-                    `
-                    : ""
-                }
+                        ${items.events.length
+                            ? `<span class="event-marker">*</span>`
+                            : ""}
+                    </div>
+                ` : ""}
             </div>
         `;
     }
@@ -1220,26 +1280,22 @@ function renderSelectedDay() {
     `;
 
     items.tasks.forEach(task => {
-        const subject =
-            task.subjects?.name || "";
+        const subject = task.subjects?.name || "";
 
         let info = "";
 
         if (task.start_time) {
             const start = formatTime(task.start_time);
-            const end = task.end_time
-                ? formatTime(task.end_time)
-                : "";
+            const end = task.end_time ? formatTime(task.end_time) : "";
 
             info += `
                 <div class="item-info">
-                    Час виконання:
-                    ${escapeHtml(start)}${end ? "–" + escapeHtml(end) : ""}
+                    Час виконання: ${escapeHtml(start)}${end ? "–" + escapeHtml(end) : ""}
                 </div>
             `;
         }
 
-        if (task.points !== null && task.points !== undefined) {
+        if (task.points !== null && task.points !== undefined && task.points !== "") {
             info += `
                 <div class="item-info">
                     Бали: ${escapeHtml(task.points)}
@@ -1248,52 +1304,30 @@ function renderSelectedDay() {
         }
 
         if (task.material) {
-            const materialLinks = parseMaterials(task.material);
-
-            info += materialLinks.map(link => `
-                <div class="item-info">
-                    <a
-                        class="material"
-                        href="${escapeHtml(link.url)}"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        ${escapeHtml(link.name)}
-                    </a>
-                </div>
-            `).join("");
+            info += renderMaterialLinks(task.material);
         }
 
         html += `
             <div class="calendar-item task-item">
                 <div class="item-label">
-                    ${subject ? `● ${escapeHtml(subject)}` : "● Завдання"}
+                    ${subject ? escapeHtml(subject) : "Домашнє завдання"}
                 </div>
 
                 <div class="item-title">
                     ${escapeHtml(task.title || "Завдання")}
                 </div>
 
-                ${
-                    task.description
-                    ? `
-                        <div class="item-description">
-                            ${escapeHtml(task.description)}
-                        </div>
-                    `
-                    : ""
-                }
+                ${task.description ? `
+                    <div class="item-description">
+                        ${escapeHtml(task.description)}
+                    </div>
+                ` : ""}
 
-                ${
-                    task.deadline
-                    ? `
-                        <div class="item-info">
-                            Дедлайн:
-                            ${escapeHtml(formatDateOnly(task.deadline))}
-                        </div>
-                    `
-                    : ""
-                }
+                ${task.deadline ? `
+                    <div class="item-info">
+                        Дедлайн: ${escapeHtml(formatDateOnly(task.deadline))}
+                    </div>
+                ` : ""}
 
                 ${info}
             </div>
@@ -1307,7 +1341,7 @@ function renderSelectedDay() {
         let time = "";
 
         if (event.start_at) {
-            time += formatDateTime(event.start_at);
+            time = formatDateTime(event.start_at);
 
             if (event.end_at) {
                 const endDate = new Date(event.end_at);
@@ -1329,41 +1363,25 @@ function renderSelectedDay() {
                     ${escapeHtml(event.title || "Подія")}
                 </div>
 
-                ${
-                    event.description
-                    ? `
-                        <div class="item-description">
-                            ${escapeHtml(event.description)}
-                        </div>
-                    `
-                    : ""
-                }
+                ${event.description ? `
+                    <div class="item-description">
+                        ${escapeHtml(event.description)}
+                    </div>
+                ` : ""}
 
-                ${
-                    time
-                    ? `
-                        <div class="item-info">
-                            Час: ${escapeHtml(time)}
-                        </div>
-                    `
-                    : ""
-                }
+                ${time ? `
+                    <div class="item-info">
+                        Час: ${escapeHtml(time)}
+                    </div>
+                ` : ""}
 
-                ${
-                    event.info
-                    ? `
-                        <div class="item-info">
-                            ℹ ${escapeHtml(event.info)}
-                        </div>
-                    `
-                    : ""
-                }
+                ${event.info ? `
+                    <div class="item-info">
+                        ${escapeHtml(event.info)}
+                    </div>
+                ` : ""}
 
-                ${
-                    event.link
-                    ? renderMaterialLinks(event.link)
-                    : ""
-                }
+                ${event.link ? renderMaterialLinks(event.link) : ""}
             </div>
         `;
     });
@@ -1382,13 +1400,17 @@ function changeMonth(offset) {
 }
 
 showCurrentDate();
+renderCalendar();
+
 loadTasks();
 loadEvents();
 
 setInterval(() => {
     renderTasks();
+    renderEvents();
+    renderSummaryCards();
 }, 60000);
 </script>
-
 </body>
 </html>
+
